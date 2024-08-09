@@ -16,6 +16,20 @@ test("serialize basic object", () => {
 	assert.equal(result.toString(), expected.toString());
 });
 
+test("parse URLSearchParams to object with numbers and booleans", () => {
+	const schema = z.object({
+		count: z.number(),
+		isActive: z.boolean(),
+	});
+
+	const input = new URLSearchParams({ count: "42", isActive: "true" });
+	const expected = { count: 42, isActive: true };
+
+	const result = parse({ schema, input });
+
+	assert.deepEqual(result, expected);
+});
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
