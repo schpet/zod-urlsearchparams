@@ -1,4 +1,4 @@
-import type { ZodSchema, infer as zodInfer, ZodObject, ZodTypeAny } from "zod";
+import type { ZodObject, ZodSchema, ZodTypeAny, infer as zodInfer } from "zod";
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>;
 
