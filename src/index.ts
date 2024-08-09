@@ -4,7 +4,11 @@ export function parse<T extends ZodSchema>(
 	schema: T,
 	input: URLSearchParams,
 ): zodInfer<T> {
-	throw new Error("parse function not implemented");
+	const obj: Record<string, string> = {};
+	for (const [key, value] of input.entries()) {
+		obj[key] = value;
+	}
+	return schema.parse(obj);
 }
 
 export function serialize<T extends ZodSchema>(
