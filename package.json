@@ -40,7 +40,10 @@
     "build": "pnpm run build-fast -- --dts-resolve",
     "build-fast": "tsup src/index.ts --format cjs,esm",
     "prepublishOnly": "pnpm run build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "format": "biome format --write",
+    "lint": "biome lint --write",
+    "check": "biome check --write"
   },
   "types": "./dist/index.d.ts"
 }
