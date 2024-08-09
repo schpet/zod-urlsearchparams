@@ -14,9 +14,19 @@ export function parse<T extends Schema>({
 	schema: T;
 	input: URLSearchParams;
 }): zodInfer<T> {
-	const obj: Record<string, string> = {};
+	const obj: Record<string, unknown> = {};
+	const schemaShape = schema.shape;
 	for (const [key, value] of input.entries()) {
-		obj[key] = value;
+		const schemaType = schemaShape[key];
+		if (schemaType instanceof ZodArray) {
+			obj[key] = value.split(',').map(item => item.trim());
+		} else if (schemaType._def.typeName === "ZodNumber") {
+			obj[key] = Number(value);
+		} else if (schemaType._def.typeName === "ZodBoolean") {
+			obj[key] = value === "true";
+		} else {
+			obj[key] = value;
+		}
 	}
 	return schema.parse(obj);
 }
