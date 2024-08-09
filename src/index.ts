@@ -20,9 +20,9 @@ export function parse<T extends Schema>({
 		const schemaType = schemaShape[key];
 		if (schemaType instanceof ZodArray) {
 			obj[key] = value.split(",").map((item) => item.trim());
-		} else if (schemaType._def.typeName === "ZodNumber") {
+		} else if (schemaType instanceof z.ZodNumber) {
 			obj[key] = Number(value);
-		} else if (schemaType._def.typeName === "ZodBoolean") {
+		} else if (schemaType instanceof z.ZodBoolean) {
 			obj[key] = value === "true";
 		} else {
 			obj[key] = value;
