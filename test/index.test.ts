@@ -16,6 +16,20 @@ test("serialize basic object", () => {
 	assert.equal(result.toString(), expected.toString());
 });
 
+test("serialize object with numbers and booleans", () => {
+	const schema = z.object({
+		count: z.number(),
+		isActive: z.boolean(),
+	});
+
+	const values = { count: 42, isActive: true };
+	const expected = new URLSearchParams({ count: "42", isActive: "true" });
+
+	const result = serialize({ schema, values });
+
+	assert.equal(result.toString(), expected.toString());
+});
+
 test("serialize object with array of strings", () => {
 	const schema = z.object({
 		tags: z.array(z.string()),
