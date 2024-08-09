@@ -11,7 +11,8 @@
     "@schpet/config": "^0.0.6",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.5"
+    "vitest": "^2.0.5",
+    "zod": "^3.23.8"
   },
   "exports": {
     "require": "./dist/index.js",
@@ -29,6 +30,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903",
+  "peerDependencies": {
+    "zod": "^3.0.0"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -39,11 +43,11 @@
   "scripts": {
     "build": "pnpm run build-fast -- --dts-resolve",
     "build-fast": "tsup src/index.ts --format cjs,esm",
-    "prepublishOnly": "pnpm run build",
-    "test": "vitest run",
+    "check": "biome check --write",
     "format": "biome format --write",
     "lint": "biome lint --write",
-    "check": "biome check --write"
+    "prepublishOnly": "pnpm run build",
+    "test": "vitest run"
   },
   "types": "./dist/index.d.ts"
 }
