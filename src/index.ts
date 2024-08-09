@@ -26,7 +26,7 @@ export function serialize<T extends Schema>(
 			const value = values[key];
 			const schemaType = schemaShape[key];
 			if (schemaType && schemaType._def.typeName === "ZodArray") {
-				for (const item of value as unknown as any[]) {
+				for (const item of value) {
 					params.append(key, String(item));
 				}
 			} else {
