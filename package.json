@@ -1,28 +1,46 @@
 {
   "name": "zod-urlsearchparams",
-  "version": "0.0.1",
   "description": "serializes and deserializes a zod schema to URLSearchParams",
-  "main": "index.js",
-  "scripts": {
-    "test": "vitest"
+  "version": "0.0.1",
+  "author": "Peter Schilling <npm@schpet.com>",
+  "bugs": {
+    "url": "https://github.com/schpet/zod-urlsearchparams/issues"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "@schpet/config": "^0.0.6",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  },
+  "exports": {
+    "require": "./dist/index.js",
+    "import": "./dist/index.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/schpet/zod-urlsearchparams#readme",
+  "keywords": [
+    "urlsearchparams",
+    "zod"
+  ],
+  "license": "ISC",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903",
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/schpet/zod-urlsearchparams.git"
   },
-  "keywords": [
-    "zod",
-    "urlsearchparams"
-  ],
-  "author": "Peter Schilling <npm@schpet.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/schpet/zod-urlsearchparams/issues"
+  "scripts": {
+    "build": "pnpm run build-fast -- --dts-resolve",
+    "build-fast": "tsup src/index.ts --format cjs,esm",
+    "prepublishOnly": "pnpm run build",
+    "test": "vitest run"
   },
-  "homepage": "https://github.com/schpet/zod-urlsearchparams#readme",
-  "devDependencies": {
-    "@biomejs/biome": "1.8.3",
-    "@schpet/config": "^0.0.6"
-  },
-  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
+  "types": "./dist/index.d.ts"
 }
