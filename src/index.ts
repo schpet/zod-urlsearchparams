@@ -18,10 +18,12 @@ export function serialize<T extends ZodSchema>(
 ): URLSearchParams {
 	const params = new URLSearchParams();
 
+	const schemaShape = schema._def.shape();
 	for (const key in values) {
 		if (Object.hasOwn(values, key)) {
 			const value = values[key];
-			if (Array.isArray(value)) {
+			const schemaType = schemaShape[key];
+			if (schemaType && schemaType._def.typeName === "ZodArray") {
 				for (const item of value) {
 					params.append(key, String(item));
 				}
