@@ -7,10 +7,13 @@ import {
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>;
 
-export function parse<T extends Schema>(
-	schema: T,
-	input: URLSearchParams,
-): zodInfer<T> {
+export function parse<T extends Schema>({
+	schema,
+	input,
+}: {
+	schema: T;
+	input: URLSearchParams;
+}): zodInfer<T> {
 	const obj: Record<string, string> = {};
 	for (const [key, value] of input.entries()) {
 		obj[key] = value;
@@ -18,11 +21,15 @@ export function parse<T extends Schema>(
 	return schema.parse(obj);
 }
 
-export function serialize<T extends Schema>(
-	schema: T,
-	values: zodInfer<T>,
-	defaultValues?: Partial<zodInfer<T>>,
-): URLSearchParams {
+export function serialize<T extends Schema>({
+	schema,
+	values,
+	defaultValues,
+}: {
+	schema: T;
+	values: zodInfer<T>;
+	defaultValues?: Partial<zodInfer<T>>;
+}): URLSearchParams {
 	const params = new URLSearchParams();
 
 	const schemaShape = schema.shape;

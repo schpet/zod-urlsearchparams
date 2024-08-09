@@ -11,7 +11,7 @@ test("serialize basic object", () => {
 	const values = { a: "one", b: "two" };
 	const expected = new URLSearchParams({ a: "one", b: "two" });
 
-	const result = serialize(schema, values);
+	const result = serialize({ schema, values });
 
 	assert.equal(result.toString(), expected.toString());
 });
@@ -27,7 +27,7 @@ test("serialize object with array of strings", () => {
 	expected.append("tags", "tag2");
 	expected.append("tags", "tag3");
 
-	const result = serialize(schema, values);
+	const result = serialize({ schema, values });
 
 	assert.equal(result.toString(), expected.toString());
 });
@@ -41,7 +41,7 @@ test("parse URLSearchParams to object", () => {
 	const input = new URLSearchParams({ a: "one", b: "two" });
 	const expected = { a: "one", b: "two" };
 
-	const result = parse(schema, input);
+	const result = parse({ schema, input });
 
 	assert.deepEqual(result, expected);
 });
