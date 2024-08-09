@@ -52,8 +52,15 @@ export function serialize<T extends Schema>({
 				for (const item of value as unknown[]) {
 					params.append(key, String(item));
 				}
-			} else {
+			} else if (
+				schemaType instanceof z.ZodString ||
+				schemaType instanceof z.ZodNumber ||
+				schemaType instanceof z.ZodBoolean
+			) {
 				params.append(key, String(value));
+			} else {
+				const encodedValue = btoa(JSON.stringify(value));
+				params.append(key, encodedValue);
 			}
 		}
 	}
