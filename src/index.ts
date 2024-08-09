@@ -1,4 +1,4 @@
-import type { ZodObject, ZodSchema, ZodTypeAny, infer as zodInfer } from "zod";
+import type { ZodObject, ZodTypeAny, infer as zodInfer } from "zod";
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>;
 
@@ -20,7 +20,7 @@ export function serialize<T extends Schema>(
 ): URLSearchParams {
 	const params = new URLSearchParams();
 
-	const schemaShape = schema._def.shape();
+	const schemaShape = schema.shape
 	for (const key in values) {
 		if (Object.hasOwn(values, key)) {
 			const value = values[key];
