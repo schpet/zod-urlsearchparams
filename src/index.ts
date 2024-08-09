@@ -1,4 +1,4 @@
-import type { ZodObject, ZodTypeAny, infer as zodInfer } from "zod";
+import { ZodArray, ZodObject, ZodTypeAny, infer as zodInfer } from "zod";
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>;
 
@@ -25,7 +25,7 @@ export function serialize<T extends Schema>(
 		if (Object.hasOwn(values, key)) {
 			const value = values[key];
 			const schemaType = schemaShape[key];
-			if (schemaType && schemaType._def.typeName === "ZodArray") {
+			if (schemaType instanceof ZodArray) {
 				for (const item of value) {
 					params.append(key, String(item));
 				}
