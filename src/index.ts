@@ -20,7 +20,12 @@ export function serialize<T extends ZodSchema>(
 
 	for (const key in values) {
 		if (Object.hasOwn(values, key)) {
-			params.append(key, String(values[key]));
+			const value = values[key];
+			if (Array.isArray(value)) {
+				value.forEach((item) => params.append(key, String(item)));
+			} else {
+				params.append(key, String(value));
+			}
 		}
 	}
 
