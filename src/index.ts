@@ -1,6 +1,8 @@
-import type { ZodSchema, infer as zodInfer } from "zod";
+import type { ZodSchema, infer as zodInfer, ZodObject, ZodTypeAny } from "zod";
 
-export function parse<T extends ZodSchema>(
+type Schema = ZodObject<Record<string, ZodTypeAny>>;
+
+export function parse<T extends Schema>(
 	schema: T,
 	input: URLSearchParams,
 ): zodInfer<T> {
@@ -11,7 +13,7 @@ export function parse<T extends ZodSchema>(
 	return schema.parse(obj);
 }
 
-export function serialize<T extends ZodSchema>(
+export function serialize<T extends Schema>(
 	schema: T,
 	values: zodInfer<T>,
 	defaultValues?: Partial<zodInfer<T>>,
