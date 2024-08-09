@@ -15,7 +15,7 @@ export function serialize<T extends ZodSchema>(
 	const params = new URLSearchParams();
 
 	for (const key in values) {
-		if (values.hasOwnProperty(key)) {
+		if (Object.hasOwn(values, key)) {
 			params.append(key, String(values[key]));
 		}
 	}
