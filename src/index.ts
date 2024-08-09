@@ -1,7 +1,5 @@
 import type { ZodSchema, infer as zodInfer } from "zod";
 
-export const foo = "foo";
-
 export function parse<T extends ZodSchema>(
 	schema: T,
 	input: URLSearchParams,
