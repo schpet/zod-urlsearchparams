@@ -1,8 +1,8 @@
 import {
 	ZodArray,
-	z,
 	type ZodObject,
 	type ZodTypeAny,
+	z,
 	type infer as zodInfer,
 } from "zod";
 
