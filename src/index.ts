@@ -12,5 +12,13 @@ export function serialize<T extends ZodSchema>(
 	values: zodInfer<T>,
 	defaultValues?: Partial<zodInfer<T>>,
 ): URLSearchParams {
-	throw new Error("serialize function not implemented");
+	const params = new URLSearchParams();
+
+	for (const key in values) {
+		if (values.hasOwnProperty(key)) {
+			params.append(key, String(values[key]));
+		}
+	}
+
+	return params;
 }

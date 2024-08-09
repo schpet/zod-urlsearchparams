@@ -2,9 +2,6 @@ import { assert, test } from "vitest";
 import { z } from "zod";
 import { serialize } from "../src";
 
-test("simple", () => {
-	assert.equal(foo, "foo");
-});
 
 test("serialize basic object", () => {
 	const schema = z.object({
