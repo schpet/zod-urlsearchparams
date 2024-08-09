@@ -1,5 +1,6 @@
 import {
 	ZodArray,
+	z,
 	type ZodObject,
 	type ZodTypeAny,
 	type infer as zodInfer,
