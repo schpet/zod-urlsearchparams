@@ -1,21 +1,21 @@
-import { test, assert } from "vitest";
+import { assert, test } from "vitest";
 import { z } from "zod";
 import { serialize } from "../src";
 
 test("simple", () => {
-  assert.equal(foo, "foo")
+	assert.equal(foo, "foo");
 });
 
 test("serialize basic object", () => {
-  const schema = z.object({
-    a: z.string(),
-    b: z.string(),
-  });
+	const schema = z.object({
+		a: z.string(),
+		b: z.string(),
+	});
 
-  const values = { a: "one", b: "two" };
-  const expected = new URLSearchParams({ a: "one", b: "two" });
+	const values = { a: "one", b: "two" };
+	const expected = new URLSearchParams({ a: "one", b: "two" });
 
-  const result = serialize(schema, values);
+	const result = serialize(schema, values);
 
-  assert.equal(result.toString(), expected.toString());
+	assert.equal(result.toString(), expected.toString());
 });
