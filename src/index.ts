@@ -4,10 +4,12 @@ type Schema = ZodObject<Record<string, ZodTypeAny>>
 
 const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"))
 const numberToString = z.number().transform((val) => val.toString())
+const dateToString = z.date().transform((val) => val.toISOString())
+const bigIntToString = z.bigint().transform((val) => val.toString())
+const urlToString = z.instanceof(URL).transform((val) => val.toString())
 const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)))
 
 const stringToBoolean = z.string().transform((val) => val === "t" || val === "true")
-
 const stringToNumber = z.string().transform((val) => {
 	const num = Number(val)
 	if (Number.isNaN(num)) {
@@ -15,6 +17,9 @@ const stringToNumber = z.string().transform((val) => {
 	}
 	return num
 })
+const stringToDate = z.string().transform((val) => new Date(val))
+const stringToBigInt = z.string().transform((val) => BigInt(val))
+const stringToUrl = z.string().transform((val) => new URL(val))
 const stringToOther = z.string().transform((val) => JSON.parse(atob(val)))
 
 function parseValue(value: string, schemaType: ZodTypeAny): unknown {
@@ -26,6 +31,15 @@ function parseValue(value: string, schemaType: ZodTypeAny): unknown {
 	}
 	if (schemaType instanceof z.ZodString) {
 		return value
+	}
+	if (schemaType instanceof z.ZodDate) {
+		return stringToDate.parse(value)
+	}
+	if (schemaType instanceof z.ZodBigInt) {
+		return stringToBigInt.parse(value)
+	}
+	if (schemaType instanceof z.ZodType && schemaType._def.typeName === "ZodUrl") {
+		return stringToUrl.parse(value)
 	}
 	return stringToOther.parse(value)
 }
@@ -39,6 +53,15 @@ function serializeValue(value: unknown, schemaType: ZodTypeAny): string {
 	}
 	if (schemaType instanceof z.ZodString) {
 		return String(value)
+	}
+	if (schemaType instanceof z.ZodDate) {
+		return dateToString.parse(value)
+	}
+	if (schemaType instanceof z.ZodBigInt) {
+		return bigIntToString.parse(value)
+	}
+	if (schemaType instanceof z.ZodType && schemaType._def.typeName === "ZodUrl") {
+		return urlToString.parse(value)
 	}
 	return otherToString.parse(value)
 }
