@@ -103,7 +103,7 @@ type ParseArgs<T extends Schema> = {
 	defaultData?: Partial<zodInfer<T>>
 }
 
-function shapeObject<T extends Schema>({
+function shape<T extends Schema>({
 	schema,
 	input,
 	defaultData,
@@ -124,7 +124,7 @@ function shapeObject<T extends Schema>({
 }
 
 function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): zodInfer<T> {
-	const shapedObject = shapeObject({ schema, input, defaultData })
+	const shapedObject = shape({ schema, input, defaultData })
 	return schema.parse(shapedObject)
 }
 
@@ -191,22 +191,13 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 	}
 }
 
-function parseSafe<T extends Schema>({
-	schema,
-	input,
-	defaultData,
-}: ParseArgs<T>): ReturnType<T["safeParse"]> {
-	const shapedObject = shapeObject({ schema, input, defaultData })
-	return schema.safeParse(shapedObject)
-}
-
 export {
 	ZodURLSearchParamSerializer,
 	parse,
-	parseSafe,
 	serialize,
 	type ParseArgs,
 	type SerializeArgs,
 	type ZodURLSearchParamSerializerParseArgs,
-	type ZodURLSearchParamSerializerSerializeArgs,
+	type ZodURLSearchParamSerializerSerializeArgs
 }
+
