@@ -116,12 +116,16 @@ function serialize<T extends Schema>({
 		if (Object.hasOwn(data, key)) {
 			let value = data[key]
 			let schemaType = schemaShape[key]
-			if (schemaType instanceof ZodArray) {
-				for (let item of value as unknown[]) {
-					params.append(key, serializeValue(item, schemaType.element))
+			
+			// Check if the value is different from the default
+			if (!defaultData || value !== defaultData[key]) {
+				if (schemaType instanceof ZodArray) {
+					for (let item of value as unknown[]) {
+						params.append(key, serializeValue(item, schemaType.element))
+					}
+				} else {
+					params.append(key, serializeValue(value, schemaType))
 				}
-			} else {
-				params.append(key, serializeValue(value, schemaType))
 			}
 		}
 	}
