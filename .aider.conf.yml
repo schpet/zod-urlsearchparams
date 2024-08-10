@@ -1,0 +1,9 @@
+# https://aider.chat/docs/config/aider_conf.html#sample-yaml-config-file
+
+# runs biome's linter and formatter in write mode
+lint-cmd: pnpm run check
+auto-lint: true
+
+# runs vitest
+test-cmd: pnpm run test
+auto-test: true
