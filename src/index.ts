@@ -3,16 +3,13 @@ import { ZodArray, type ZodObject, type ZodTypeAny, z, type infer as zodInfer } 
 type Schema = ZodObject<Record<string, ZodTypeAny>>
 
 function isScalar(value: unknown): boolean {
-	if (
+	return (
 		typeof value === "string" ||
 		typeof value === "number" ||
 		typeof value === "boolean" ||
 		typeof value === "bigint" ||
 		value instanceof Date
-	) {
-		return true
-	}
-	return false
+	)
 }
 
 function isEqual(value1: unknown, value2: unknown): boolean {
