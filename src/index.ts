@@ -29,7 +29,15 @@ export function parse<T extends Schema>({
 		let values = input.getAll(key)
 		let schemaType = schemaShape[key]
 		if (schemaType instanceof ZodArray) {
-			obj[key] = values
+			if (schemaType.element instanceof z.ZodNumber) {
+				obj[key] = values.map(value => stringToNumber.parse(value))
+			} else if (schemaType.element instanceof z.ZodBoolean) {
+				obj[key] = values.map(value => stringToBoolean.parse(value))
+			} else if (schemaType.element instanceof z.ZodString) {
+				obj[key] = values
+			} else {
+				obj[key] = values.map(value => stringToOther.parse(value))
+			}
 		} else if (values.length > 0) {
 			let value = values[values.length - 1]
 			if (schemaType instanceof z.ZodNumber) {
