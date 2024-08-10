@@ -6,24 +6,36 @@ on:
   pull_request:
     branches: [main]
 
+# https://pnpm.io/continuous-integration#github-actions
 jobs:
-  # https://pnpm.io/continuous-integration#github-actions
-  test:
+  biome:
     if: "!contains(github.event.head_commit.message, 'skip-ci')"
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        node-version: [14.x]
-
-    runs-on: ${{ matrix.os }}
-
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          version: 9
+          cache: "pnpm"
+          node-version-file: ".node-version"
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run CI
+        run: pnpm run ci
+
+  test:
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [18.x]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -31,6 +43,5 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
-
-      - name: Build and Test
+      - name: Run Tests
         run: pnpm test
