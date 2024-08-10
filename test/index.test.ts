@@ -81,6 +81,21 @@ test("serialize and parse object with Date", () => {
 	assert.strictEqual(parsed.createdAt.toISOString(), "2023-06-15T12:00:00.000Z")
 })
 
+test("serialize and parse nested object with emoji", () => {
+	const schema = z.object({
+		p: z.object({
+			c: z.string(),
+		}),
+	})
+
+	const originalData = { p: { c: "Hello, 🌍!" } }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(parsed.p.c, "Hello, 🌍!")
+})
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
