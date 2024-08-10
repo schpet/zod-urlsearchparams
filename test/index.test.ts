@@ -30,6 +30,21 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
+test("serialize and parse object with BigInt", () => {
+	const schema = z.object({
+		id: z.bigint(),
+		name: z.string(),
+	})
+
+	const originalData = { id: BigInt("9007199254740991"), name: "Large Number" }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(typeof parsed.id, "bigint")
+	assert.strictEqual(parsed.id.toString(), "9007199254740991")
+})
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
