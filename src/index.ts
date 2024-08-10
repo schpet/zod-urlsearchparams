@@ -6,7 +6,7 @@ const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"))
 const numberToString = z.number().transform((val) => val.toString())
 const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)))
 
-const stringToBoolean = z.string().transform((val) => val === "t")
+const stringToBoolean = z.string().transform((val) => val === "t" || val === "true")
 const stringToNumber = z.string().transform((val) => {
 	const num = Number(val)
 	if (Number.isNaN(num)) {
@@ -25,18 +25,22 @@ export function parse<T extends Schema>({
 }): zodInfer<T> {
 	let obj: Record<string, unknown> = {}
 	let schemaShape = schema.shape
-	for (let [key, value] of input.entries()) {
+	for (let key in schemaShape) {
+		let values = input.getAll(key)
 		let schemaType = schemaShape[key]
 		if (schemaType instanceof ZodArray) {
-			obj[key] = value.split(",").map((item) => item.trim())
-		} else if (schemaType instanceof z.ZodNumber) {
-			obj[key] = stringToNumber.parse(value)
-		} else if (schemaType instanceof z.ZodBoolean) {
-			obj[key] = stringToBoolean.parse(value)
-		} else if (schemaType instanceof z.ZodString) {
-			obj[key] = value
-		} else {
-			obj[key] = stringToOther.parse(value)
+			obj[key] = values
+		} else if (values.length > 0) {
+			let value = values[values.length - 1]
+			if (schemaType instanceof z.ZodNumber) {
+				obj[key] = stringToNumber.parse(value)
+			} else if (schemaType instanceof z.ZodBoolean) {
+				obj[key] = stringToBoolean.parse(value)
+			} else if (schemaType instanceof z.ZodString) {
+				obj[key] = value
+			} else {
+				obj[key] = stringToOther.parse(value)
+			}
 		}
 	}
 	return schema.parse(obj)
