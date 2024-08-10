@@ -25,11 +25,20 @@ const numberToString = z.number().transform((val) => val.toString())
 const dateToString = z.date().transform((val) => val.toISOString())
 const bigIntToString = z.bigint().transform((val) => val.toString())
 const utf8ToBase64 = (str: string): string => {
-  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))))
+	return btoa(
+		encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+			String.fromCharCode(Number.parseInt(p1, 16)),
+		),
+	)
 }
 
 const base64ToUtf8 = (str: string): string => {
-  return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''))
+	return decodeURIComponent(
+		atob(str)
+			.split("")
+			.map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+			.join(""),
+	)
 }
 
 const otherToString = z.unknown().transform((val) => utf8ToBase64(JSON.stringify(val)))
@@ -155,6 +164,5 @@ export {
 	type ParseArgs,
 	type SerializeArgs,
 	type ZodURLSearchParamSerializerParseArgs,
-	type ZodURLSearchParamSerializerSerializeArgs
+	type ZodURLSearchParamSerializerSerializeArgs,
 }
-
