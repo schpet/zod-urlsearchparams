@@ -1,51 +1,45 @@
-import {
-	ZodArray,
-	type ZodObject,
-	type ZodTypeAny,
-	z,
-	type infer as zodInfer,
-} from "zod";
+import { ZodArray, type ZodObject, type ZodTypeAny, z, type infer as zodInfer } from "zod"
 
-type Schema = ZodObject<Record<string, ZodTypeAny>>;
+type Schema = ZodObject<Record<string, ZodTypeAny>>
 
-const booleanToString = z.boolean().transform((val) => val ? 't' : 'f');
-const numberToString = z.number().transform((val) => val.toString());
-const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)));
+const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"))
+const numberToString = z.number().transform((val) => val.toString())
+const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)))
 
-const stringToBoolean = z.string().transform((val) => val === 't');
+const stringToBoolean = z.string().transform((val) => val === "t")
 const stringToNumber = z.string().transform((val) => {
-  const num = Number(val);
-  if (isNaN(num)) {
-    throw new Error("Invalid number");
-  }
-  return num;
-});
-const stringToOther = z.string().transform((val) => JSON.parse(atob(val)));
+	const num = Number(val)
+	if (isNaN(num)) {
+		throw new Error("Invalid number")
+	}
+	return num
+})
+const stringToOther = z.string().transform((val) => JSON.parse(atob(val)))
 
 export function parse<T extends Schema>({
 	schema,
 	input,
 }: {
-	schema: T;
-	input: URLSearchParams;
+	schema: T
+	input: URLSearchParams
 }): zodInfer<T> {
-	let obj: Record<string, unknown> = {};
-	let schemaShape = schema.shape;
+	let obj: Record<string, unknown> = {}
+	let schemaShape = schema.shape
 	for (let [key, value] of input.entries()) {
-		let schemaType = schemaShape[key];
+		let schemaType = schemaShape[key]
 		if (schemaType instanceof ZodArray) {
-			obj[key] = value.split(",").map((item) => item.trim());
+			obj[key] = value.split(",").map((item) => item.trim())
 		} else if (schemaType instanceof z.ZodNumber) {
-			obj[key] = stringToNumber.parse(value);
+			obj[key] = stringToNumber.parse(value)
 		} else if (schemaType instanceof z.ZodBoolean) {
-			obj[key] = stringToBoolean.parse(value);
+			obj[key] = stringToBoolean.parse(value)
 		} else if (schemaType instanceof z.ZodString) {
-			obj[key] = value;
+			obj[key] = value
 		} else {
-			obj[key] = stringToOther.parse(value);
+			obj[key] = stringToOther.parse(value)
 		}
 	}
-	return schema.parse(obj);
+	return schema.parse(obj)
 }
 
 export function serialize<T extends Schema>({
@@ -53,32 +47,32 @@ export function serialize<T extends Schema>({
 	values,
 	defaultValues,
 }: {
-	schema: T;
-	values: zodInfer<T>;
-	defaultValues?: Partial<zodInfer<T>>;
+	schema: T
+	values: zodInfer<T>
+	defaultValues?: Partial<zodInfer<T>>
 }): URLSearchParams {
-	let params = new URLSearchParams();
+	let params = new URLSearchParams()
 
-	let schemaShape = schema.shape;
+	let schemaShape = schema.shape
 	for (let key in values) {
 		if (Object.hasOwn(values, key)) {
-			let value = values[key];
-			let schemaType = schemaShape[key];
+			let value = values[key]
+			let schemaType = schemaShape[key]
 			if (schemaType instanceof ZodArray) {
 				for (let item of value as unknown[]) {
-					params.append(key, String(item));
+					params.append(key, String(item))
 				}
 			} else if (schemaType instanceof z.ZodString) {
-				params.append(key, String(value));
+				params.append(key, String(value))
 			} else if (schemaType instanceof z.ZodNumber) {
-				params.append(key, numberToString.parse(value));
+				params.append(key, numberToString.parse(value))
 			} else if (schemaType instanceof z.ZodBoolean) {
-				params.append(key, booleanToString.parse(value));
+				params.append(key, booleanToString.parse(value))
 			} else {
-				params.append(key, otherToString.parse(value));
+				params.append(key, otherToString.parse(value))
 			}
 		}
 	}
 
-	return params;
+	return params
 }
