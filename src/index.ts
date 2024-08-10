@@ -171,26 +171,23 @@ function serialize<T extends Schema>({
 	return params
 }
 
-type ZodURLSearchParamSerializerParseArgs<T extends Schema> = Pick<ParseArgs<T>, "input">
-type ZodURLSearchParamSerializerSerializeArgs<T extends Schema> = Pick<SerializeArgs<T>, "data">
-
 class ZodURLSearchParamSerializer<T extends Schema> {
 	constructor(
 		private schema: T,
 		private defaultData?: Partial<z.infer<T>>,
 	) {}
 
-	serialize(args: ZodURLSearchParamSerializerSerializeArgs<T>): URLSearchParams {
+	serialize(data: z.infer<T>): URLSearchParams {
 		return serialize({
-			...args,
+			data,
 			schema: this.schema,
 			defaultData: this.defaultData,
 		})
 	}
 
-	deserialize(args: ZodURLSearchParamSerializerParseArgs<T>): z.infer<T> {
+	deserialize(input: URLSearchParams): z.infer<T> {
 		return parse({
-			...args,
+			input,
 			schema: this.schema,
 			defaultData: this.defaultData,
 		})
@@ -205,6 +202,4 @@ export {
 	shape,
 	type ParseArgs,
 	type SerializeArgs,
-	type ZodURLSearchParamSerializerParseArgs,
-	type ZodURLSearchParamSerializerSerializeArgs,
 }
