@@ -19,13 +19,14 @@ const stringToOther = z.string().transform((val) => JSON.parse(atob(val)))
 function parseScalar(value: string, schemaType: ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodNumber) {
 		return stringToNumber.parse(value)
-	} else if (schemaType instanceof z.ZodBoolean) {
-		return stringToBoolean.parse(value)
-	} else if (schemaType instanceof z.ZodString) {
-		return value
-	} else {
-		return stringToOther.parse(value)
 	}
+	if (schemaType instanceof z.ZodBoolean) {
+		return stringToBoolean.parse(value)
+	}
+	if (schemaType instanceof z.ZodString) {
+		return value
+	}
+	return stringToOther.parse(value)
 }
 
 export function parse<T extends Schema>({
