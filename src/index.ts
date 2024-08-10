@@ -116,7 +116,7 @@ function serialize<T extends Schema>({
 		if (Object.hasOwn(data, key)) {
 			let value = data[key]
 			let schemaType = schemaShape[key]
-			
+
 			// Check if the value is different from the default
 			if (!defaultData || value !== defaultData[key]) {
 				if (schemaType instanceof ZodArray) {
@@ -168,6 +168,5 @@ export {
 	type ParseArgs,
 	type SerializeArgs,
 	type ZodURLSearchParamSerializerParseArgs,
-	type ZodURLSearchParamSerializerSerializeArgs
+	type ZodURLSearchParamSerializerSerializeArgs,
 }
-
