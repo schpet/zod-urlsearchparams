@@ -12,6 +12,10 @@ const booleanToString = z.boolean().transform((val) => val ? 't' : 'f');
 const numberToString = z.number().transform((val) => val.toString());
 const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)));
 
+const stringToBoolean = z.string().transform((val) => val === 't');
+const stringToNumber = z.string().transform((val) => Number(val));
+const stringToOther = z.string().transform((val) => JSON.parse(atob(val)));
+
 export function parse<T extends Schema>({
 	schema,
 	input,
@@ -26,11 +30,13 @@ export function parse<T extends Schema>({
 		if (schemaType instanceof ZodArray) {
 			obj[key] = value.split(",").map((item) => item.trim());
 		} else if (schemaType instanceof z.ZodNumber) {
-			obj[key] = Number(value);
+			obj[key] = stringToNumber.parse(value);
 		} else if (schemaType instanceof z.ZodBoolean) {
-			obj[key] = value === "true";
-		} else {
+			obj[key] = stringToBoolean.parse(value);
+		} else if (schemaType instanceof z.ZodString) {
 			obj[key] = value;
+		} else {
+			obj[key] = stringToOther.parse(value);
 		}
 	}
 	return schema.parse(obj);
