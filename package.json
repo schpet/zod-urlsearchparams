@@ -18,9 +18,14 @@
 		"require": "./dist/index.js",
 		"import": "./dist/index.mjs"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"homepage": "https://github.com/schpet/zod-urlsearchparams#readme",
-	"keywords": ["urlsearchparams", "zod"],
+	"keywords": [
+		"urlsearchparams",
+		"zod"
+	],
 	"license": "ISC",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
@@ -39,11 +44,11 @@
 		"build": "pnpm run build-fast -- --dts-resolve",
 		"build-fast": "tsup src/index.ts --format cjs,esm",
 		"check": "biome check --write --unsafe",
+		"ci": "biome ci",
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"prepublishOnly": "pnpm run build",
-		"test": "vitest run",
-		"ci": "biome ci"
+		"test": "vitest run"
 	},
 	"types": "./dist/index.d.ts"
 }
