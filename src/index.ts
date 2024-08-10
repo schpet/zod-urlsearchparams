@@ -84,7 +84,7 @@ type ParseArgs<T extends Schema> = {
 }
 
 function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): zodInfer<T> {
-	let obj: Record<string, unknown> = {}
+	let obj: Record<string, unknown> = defaultData ? { ...defaultData } : {}
 	let schemaShape = schema.shape
 	for (let key in schemaShape) {
 		let values = input.getAll(key)
