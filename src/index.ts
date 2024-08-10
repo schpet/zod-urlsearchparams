@@ -8,6 +8,18 @@ import {
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>;
 
+export type ParseArgs<T extends Schema> = {
+	schema: T;
+	input: URLSearchParams;
+	defaultData?: Partial<zodInfer<T>>;
+};
+
+export type SerializeArgs<T extends Schema> = {
+	schema: T;
+	data: zodInfer<T>;
+	defaultData?: Partial<zodInfer<T>>;
+};
+
 const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"));
 const numberToString = z.number().transform((val) => val.toString());
 const dateToString = z.date().transform((val) => val.toISOString());
@@ -70,11 +82,7 @@ function parse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: {
-	schema: T;
-	input: URLSearchParams;
-	defaultData?: Partial<zodInfer<T>>;
-}): zodInfer<T> {
+}: ParseArgs<T>): zodInfer<T> {
 	let obj: Record<string, unknown> = {};
 	let schemaShape = schema.shape;
 	for (let key in schemaShape) {
@@ -94,11 +102,7 @@ function serialize<T extends Schema>({
 	schema,
 	data,
 	defaultData,
-}: {
-	schema: T;
-	data: zodInfer<T>;
-	defaultData?: Partial<zodInfer<T>>;
-}): URLSearchParams {
+}: SerializeArgs<T>): URLSearchParams {
 	let params = new URLSearchParams();
 
 	let schemaShape = schema.shape;
@@ -135,4 +139,4 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 	}
 }
 
-export { ZodURLSearchParamSerializer, parse, serialize };
+export { ZodURLSearchParamSerializer, parse, serialize, ParseArgs, SerializeArgs };
