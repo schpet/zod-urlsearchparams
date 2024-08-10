@@ -16,7 +16,7 @@ const stringToNumber = z.string().transform((val) => {
 })
 const stringToOther = z.string().transform((val) => JSON.parse(atob(val)))
 
-function parseScalar(value: string, schemaType: ZodTypeAny): unknown {
+function parseValue(value: string, schemaType: ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodNumber) {
 		return stringToNumber.parse(value)
 	}
@@ -29,7 +29,7 @@ function parseScalar(value: string, schemaType: ZodTypeAny): unknown {
 	return stringToOther.parse(value)
 }
 
-function serializeScalar(value: unknown, schemaType: ZodTypeAny): string {
+function serializeValue(value: unknown, schemaType: ZodTypeAny): string {
 	if (schemaType instanceof z.ZodNumber) {
 		return numberToString.parse(value)
 	}
@@ -55,10 +55,10 @@ export function parse<T extends Schema>({
 		let values = input.getAll(key)
 		let schemaType = schemaShape[key]
 		if (schemaType instanceof ZodArray) {
-			obj[key] = values.map((value) => parseScalar(value, schemaType.element))
+			obj[key] = values.map((value) => parseValue(value, schemaType.element))
 		} else if (values.length > 0) {
 			let value = values[values.length - 1]
-			obj[key] = parseScalar(value, schemaType)
+			obj[key] = parseValue(value, schemaType)
 		}
 	}
 	return schema.parse(obj)
@@ -82,10 +82,10 @@ export function serialize<T extends Schema>({
 			let schemaType = schemaShape[key]
 			if (schemaType instanceof ZodArray) {
 				for (let item of value as unknown[]) {
-					params.append(key, serializeScalar(item, schemaType.element))
+					params.append(key, serializeValue(item, schemaType.element))
 				}
 			} else {
-				params.append(key, serializeScalar(value, schemaType))
+				params.append(key, serializeValue(value, schemaType))
 			}
 		}
 	}
