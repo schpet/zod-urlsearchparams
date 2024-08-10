@@ -16,6 +16,18 @@ const stringToNumber = z.string().transform((val) => {
 })
 const stringToOther = z.string().transform((val) => JSON.parse(atob(val)))
 
+function parseScalar(value: string, schemaType: ZodTypeAny): unknown {
+	if (schemaType instanceof z.ZodNumber) {
+		return stringToNumber.parse(value)
+	} else if (schemaType instanceof z.ZodBoolean) {
+		return stringToBoolean.parse(value)
+	} else if (schemaType instanceof z.ZodString) {
+		return value
+	} else {
+		return stringToOther.parse(value)
+	}
+}
+
 export function parse<T extends Schema>({
 	schema,
 	input,
@@ -29,26 +41,10 @@ export function parse<T extends Schema>({
 		let values = input.getAll(key)
 		let schemaType = schemaShape[key]
 		if (schemaType instanceof ZodArray) {
-			if (schemaType.element instanceof z.ZodNumber) {
-				obj[key] = values.map((value) => stringToNumber.parse(value))
-			} else if (schemaType.element instanceof z.ZodBoolean) {
-				obj[key] = values.map((value) => stringToBoolean.parse(value))
-			} else if (schemaType.element instanceof z.ZodString) {
-				obj[key] = values
-			} else {
-				obj[key] = values.map((value) => stringToOther.parse(value))
-			}
+			obj[key] = values.map((value) => parseScalar(value, schemaType.element))
 		} else if (values.length > 0) {
 			let value = values[values.length - 1]
-			if (schemaType instanceof z.ZodNumber) {
-				obj[key] = stringToNumber.parse(value)
-			} else if (schemaType instanceof z.ZodBoolean) {
-				obj[key] = stringToBoolean.parse(value)
-			} else if (schemaType instanceof z.ZodString) {
-				obj[key] = value
-			} else {
-				obj[key] = stringToOther.parse(value)
-			}
+			obj[key] = parseScalar(value, schemaType)
 		}
 	}
 	return schema.parse(obj)
