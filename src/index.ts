@@ -47,10 +47,7 @@ const otherToString = z.unknown().transform((val) => utf8ToBase64(JSON.stringify
 const stringToBoolean = z.string().transform((val) => val === "t" || val === "true")
 const stringToNumber = z.string().transform((val) => {
 	const num = Number(val)
-	if (Number.isNaN(num)) {
-		throw new Error("Invalid number")
-	}
-	return num
+	return Number.isNaN(num) ? undefined : num
 })
 const stringToDate = z.string().transform((val) => new Date(val))
 const stringToBigInt = z.string().transform((val) => BigInt(val))
@@ -129,12 +126,8 @@ function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): 
 }
 
 function safeParse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>) {
-	try {
-		const shapedObject = shape({ schema, input, defaultData })
-		return schema.safeParse(shapedObject)
-	} catch (error) {
-		return { success: false, error: error instanceof Error ? error : new Error(String(error)) }
-	}
+	const shapedObject = shape({ schema, input, defaultData })
+	return schema.safeParse(shapedObject)
 }
 
 type SerializeArgs<T extends Schema> = {
