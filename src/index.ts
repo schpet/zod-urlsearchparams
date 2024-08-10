@@ -1,11 +1,4 @@
-import {
-	type SafeParseReturnType,
-	ZodArray,
-	type ZodObject,
-	type ZodTypeAny,
-	z,
-	type infer as zodInfer,
-} from "zod"
+import { type SafeParseReturnType, ZodArray, type ZodObject, type ZodTypeAny, z } from "zod"
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>
 
@@ -104,7 +97,7 @@ type ParseArgs<T extends Schema> = {
 	/**
 	 * Default data to use if the key is not present in the input, shallow merge
 	 */
-	defaultData?: Partial<zodInfer<T>>
+	defaultData?: Partial<z.infer<T>>
 }
 
 function shape<T extends Schema>({
@@ -127,7 +120,7 @@ function shape<T extends Schema>({
 	return obj
 }
 
-function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): zodInfer<T> {
+function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): z.infer<T> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.parse(shapedObject)
 }
@@ -136,18 +129,18 @@ function safeParse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): SafeParseReturnType<zodInfer<T>, zodInfer<T>> {
+}: ParseArgs<T>): SafeParseReturnType<z.infer<T>, z.infer<T>> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.safeParse(shapedObject)
 }
 
 type SerializeArgs<T extends Schema> = {
 	schema: T
-	data: zodInfer<T>
+	data: z.infer<T>
 	/**
 	 * Default data to use if the key is not present in the input, shallow merge
 	 */
-	defaultData?: Partial<zodInfer<T>>
+	defaultData?: Partial<z.infer<T>>
 }
 function serialize<T extends Schema>({
 	schema,
@@ -184,7 +177,7 @@ type ZodURLSearchParamSerializerSerializeArgs<T extends Schema> = Pick<Serialize
 class ZodURLSearchParamSerializer<T extends Schema> {
 	constructor(
 		private schema: T,
-		private defaultData?: Partial<zodInfer<T>>,
+		private defaultData?: Partial<z.infer<T>>,
 	) {}
 
 	serialize(args: ZodURLSearchParamSerializerSerializeArgs<T>): URLSearchParams {
@@ -195,7 +188,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		})
 	}
 
-	deserialize(args: ZodURLSearchParamSerializerParseArgs<T>): zodInfer<T> {
+	deserialize(args: ZodURLSearchParamSerializerParseArgs<T>): z.infer<T> {
 		return parse({
 			...args,
 			schema: this.schema,
