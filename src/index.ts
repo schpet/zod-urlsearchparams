@@ -119,4 +119,16 @@ function serialize<T extends Schema>({
 	return params;
 }
 
-export { parse, serialize };
+class Serializer<T extends Schema> {
+	constructor(private schema: T, private defaultData?: Partial<zodInfer<T>>) {}
+
+	serialize(data: zodInfer<T>): URLSearchParams {
+		return serialize({ schema: this.schema, data, defaultData: this.defaultData });
+	}
+
+	deserialize(input: URLSearchParams): zodInfer<T> {
+		return parse({ schema: this.schema, input, defaultData: this.defaultData });
+	}
+}
+
+export { parse, serialize, Serializer };
