@@ -94,6 +94,7 @@ test("serialize and parse nested object with emoji", () => {
 
 	assert.deepEqual(parsed, originalData)
 	assert.strictEqual(parsed.p.c, "Hello, 🌍!")
+	console.log(serialized.toString())
 })
 
 test("serialize object with numbers and booleans", () => {

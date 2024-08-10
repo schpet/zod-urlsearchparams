@@ -38,7 +38,7 @@
 	"scripts": {
 		"build": "pnpm run build-fast -- --dts-resolve",
 		"build-fast": "tsup src/index.ts --format cjs,esm",
-		"check": "biome check --write",
+		"check": "biome check --write --unsafe",
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"prepublishOnly": "pnpm run build",
