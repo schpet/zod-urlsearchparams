@@ -2,24 +2,6 @@ import { ZodArray, type ZodObject, type ZodTypeAny, z, type infer as zodInfer } 
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>
 
-type ParseArgs<T extends Schema> = {
-	schema: T
-	input: URLSearchParams
-	defaultData?: Partial<zodInfer<T>>
-}
-
-type SerializeArgs<T extends Schema> = {
-	schema: T
-	data: zodInfer<T>
-	defaultData?: Partial<zodInfer<T>>
-}
-
-type ZodURLSearchParamSerializerParseArgs = Exclude<ParseArgs<Schema>, "schema">
-type ZodURLSearchParamSerializerSerializeArgs<T> = Exclude<
-	SerializeArgs<Schema>,
-	"schema" | "defaultData"
-> & { data: T }
-
 const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"))
 const numberToString = z.number().transform((val) => val.toString())
 const dateToString = z.date().transform((val) => val.toISOString())
@@ -95,6 +77,12 @@ function serializeValue(value: unknown, schemaType: ZodTypeAny): string {
 	return otherToString.parse(value)
 }
 
+type ParseArgs<T extends Schema> = {
+	schema: T
+	input: URLSearchParams
+	defaultData?: Partial<zodInfer<T>>
+}
+
 function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): zodInfer<T> {
 	let obj: Record<string, unknown> = {}
 	let schemaShape = schema.shape
@@ -111,6 +99,11 @@ function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): 
 	return schema.parse(obj)
 }
 
+type SerializeArgs<T extends Schema> = {
+	schema: T
+	data: zodInfer<T>
+	defaultData?: Partial<zodInfer<T>>
+}
 function serialize<T extends Schema>({
 	schema,
 	data,
@@ -136,6 +129,11 @@ function serialize<T extends Schema>({
 	return params
 }
 
+type ZodURLSearchParamSerializerParseArgs = Exclude<ParseArgs<Schema>, "schema">
+type ZodURLSearchParamSerializerSerializeArgs<T> = Exclude<
+	SerializeArgs<Schema>,
+	"schema" | "defaultData"
+> & { data: T }
 class ZodURLSearchParamSerializer<T extends Schema> {
 	constructor(
 		private schema: T,
@@ -166,5 +164,6 @@ export {
 	type ParseArgs,
 	type SerializeArgs,
 	type ZodURLSearchParamSerializerParseArgs,
-	type ZodURLSearchParamSerializerSerializeArgs,
+	type ZodURLSearchParamSerializerSerializeArgs
 }
+
