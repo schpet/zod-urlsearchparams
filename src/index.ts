@@ -14,6 +14,9 @@ export type SerializeArgs<T extends Schema> = {
 	defaultData?: Partial<zodInfer<T>>
 }
 
+export type ZodURLSearchParamSerializerParseArgs = Exclude<ParseArgs<Schema>, 'schema'>
+export type ZodURLSearchParamSerializerSerializeArgs<T> = Exclude<SerializeArgs<Schema>, 'schema' | 'defaultData'> & { data: T }
+
 const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"))
 const numberToString = z.number().transform((val) => val.toString())
 const dateToString = z.date().transform((val) => val.toISOString())
@@ -117,17 +120,25 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		private defaultData?: Partial<zodInfer<T>>,
 	) {}
 
-	serialize(data: zodInfer<T>): URLSearchParams {
+	serialize(args: ZodURLSearchParamSerializerSerializeArgs<zodInfer<T>>): URLSearchParams {
 		return serialize({
 			schema: this.schema,
-			data,
+			...args,
 			defaultData: this.defaultData,
 		})
 	}
 
-	deserialize(input: URLSearchParams): zodInfer<T> {
-		return parse({ schema: this.schema, input, defaultData: this.defaultData })
+	deserialize(args: ZodURLSearchParamSerializerParseArgs): zodInfer<T> {
+		return parse({ schema: this.schema, ...args, defaultData: this.defaultData })
 	}
 }
 
-export { ZodURLSearchParamSerializer, parse, serialize, type ParseArgs, type SerializeArgs }
+export { 
+	ZodURLSearchParamSerializer, 
+	parse, 
+	serialize, 
+	type ParseArgs, 
+	type SerializeArgs,
+	type ZodURLSearchParamSerializerParseArgs,
+	type ZodURLSearchParamSerializerSerializeArgs
+}
