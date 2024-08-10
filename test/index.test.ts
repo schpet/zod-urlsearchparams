@@ -45,7 +45,7 @@ test("serialize object with default data", () => {
 
 	const values = {
 		name: "Jane Doe",
-		age: 30,  // Same as default
+		age: 30, // Same as default
 		isStudent: true,
 	}
 
