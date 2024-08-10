@@ -41,7 +41,7 @@
 		"url": "git+https://github.com/schpet/zod-urlsearchparams.git"
 	},
 	"scripts": {
-		"build": "pnpm run build-fast --dts",
+		"build": "pnpm run build-fast --dts-resolve",
 		"build-fast": "tsup src/index.ts --format cjs,esm",
 		"check": "biome check --write --unsafe",
 		"ci": "biome ci",
