@@ -29,12 +29,12 @@ const utf8ToBase64 = (str: string): string => {
 		encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) =>
 			String.fromCharCode(Number.parseInt(p1, 16)),
 		),
-	).replace(/=+$/, '');
+	).replace(/=+$/, "")
 }
 
 const base64ToUtf8 = (str: string): string => {
 	// Add padding if necessary
-	str = str.padEnd(str.length + (4 - str.length % 4) % 4, '=');
+	str = str.padEnd(str.length + ((4 - (str.length % 4)) % 4), "=")
 	return decodeURIComponent(
 		atob(str)
 			.split("")
