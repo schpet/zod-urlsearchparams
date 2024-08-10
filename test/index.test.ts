@@ -11,7 +11,7 @@ test("serialize basic object", () => {
 	const values = { a: "one", b: "two" }
 	const expected = new URLSearchParams({ a: "one", b: "two" })
 
-	const result = serialize({ schema, values })
+	const result = serialize({ schema, data: values })
 
 	assert.equal(result.toString(), expected.toString())
 })
@@ -39,7 +39,7 @@ test("serialize object with numbers and booleans", () => {
 	const values = { count: 42, isActive: true }
 	const expected = new URLSearchParams({ count: "42", isActive: "t" })
 
-	const result = serialize({ schema, values })
+	const result = serialize({ schema, data: values })
 
 	assert.equal(result.toString(), expected.toString())
 })
@@ -55,7 +55,7 @@ test("serialize object with array of strings", () => {
 	expected.append("tags", "tag2")
 	expected.append("tags", "tag3")
 
-	const result = serialize({ schema, values })
+	const result = serialize({ schema, data: values })
 
 	assert.equal(result.toString(), expected.toString())
 })
