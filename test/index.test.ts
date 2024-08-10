@@ -1,6 +1,6 @@
 import { assert, test } from "vitest"
 import { z } from "zod"
-import { parse, serialize } from "../src"
+import { parse, serialize, ZodURLSearchParamSerializer } from "../src"
 
 test("serialize basic object", () => {
 	const schema = z.object({
@@ -28,6 +28,30 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	const result = parse({ schema, input })
 
 	assert.deepEqual(result, expected)
+})
+
+test("ZodURLSearchParamSerializer serializes and deserializes simple object", () => {
+	const schema = z.object({
+		name: z.string(),
+		age: z.number(),
+		isStudent: z.boolean(),
+	})
+
+	const serializer = new ZodURLSearchParamSerializer(schema)
+
+	const originalData = {
+		name: "John Doe",
+		age: 30,
+		isStudent: false,
+	}
+
+	const serialized = serializer.serialize(originalData)
+	const deserialized = serializer.deserialize(serialized)
+
+	assert.deepEqual(deserialized, originalData)
+	assert.strictEqual(typeof deserialized.name, "string")
+	assert.strictEqual(typeof deserialized.age, "number")
+	assert.strictEqual(typeof deserialized.isStudent, "boolean")
 })
 
 test("serialize and parse object with BigInt", () => {
