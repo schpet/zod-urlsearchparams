@@ -195,6 +195,7 @@ export {
 	ZodURLSearchParamSerializer,
 	parse,
 	serialize,
+	shape,
 	type ParseArgs,
 	type SerializeArgs,
 	type ZodURLSearchParamSerializerParseArgs,
