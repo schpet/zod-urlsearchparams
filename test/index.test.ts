@@ -45,6 +45,21 @@ test("serialize and parse object with BigInt", () => {
 	assert.strictEqual(parsed.id.toString(), "9007199254740991")
 })
 
+test("serialize and parse object with Date", () => {
+	const schema = z.object({
+		createdAt: z.date(),
+		name: z.string(),
+	})
+
+	const originalData = { createdAt: new Date("2023-06-15T12:00:00Z"), name: "Test Date" }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(parsed.createdAt instanceof Date, true)
+	assert.strictEqual(parsed.createdAt.toISOString(), "2023-06-15T12:00:00.000Z")
+})
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
