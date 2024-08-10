@@ -73,3 +73,20 @@ test("parse URLSearchParams to object", () => {
 
 	assert.deepEqual(result, expected)
 })
+
+test("parse URLSearchParams with array of strings", () => {
+	const schema = z.object({
+		tags: z.array(z.string()),
+	})
+
+	const input = new URLSearchParams()
+	input.append("tags", "tag1")
+	input.append("tags", "tag2")
+	input.append("tags", "tag3")
+
+	const expected = { tags: ["tag1", "tag2", "tag3"] }
+
+	const result = parse({ schema, input })
+
+	assert.deepEqual(result, expected)
+})
