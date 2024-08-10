@@ -1,6 +1,6 @@
 import { assert, test } from "vitest"
 import { z } from "zod"
-import { ZodURLSearchParamSerializer, parse, serialize } from "../src"
+import { ZodURLSearchParamSerializer, parse, serialize, safeParse } from "../src"
 
 test("serialize basic object", () => {
 	const schema = z.object({
@@ -152,6 +152,29 @@ test("serialize and parse nested object with emoji", () => {
 
 	assert.deepEqual(parsed, originalData)
 	assert.strictEqual(parsed.p.c, "Hello, 🌍!")
+})
+
+test("safeParse with valid and invalid input", () => {
+	const schema = z.object({
+		age: z.number(),
+		name: z.string(),
+	})
+
+	const validInput = new URLSearchParams({ age: "30", name: "John" })
+	const invalidInput = new URLSearchParams({ age: "not a number", name: "John" })
+
+	const validResult = safeParse({ schema, input: validInput })
+	const invalidResult = safeParse({ schema, input: invalidInput })
+
+	assert.isTrue(validResult.success)
+	if (validResult.success) {
+		assert.deepEqual(validResult.data, { age: 30, name: "John" })
+	}
+
+	assert.isFalse(invalidResult.success)
+	if (!invalidResult.success) {
+		assert.isTrue(invalidResult.error instanceof z.ZodError)
+	}
 })
 
 test("serialize object with numbers and booleans", () => {
