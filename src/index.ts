@@ -209,6 +209,5 @@ export {
 	type ParseArgs,
 	type SerializeArgs,
 	type ZodURLSearchParamSerializerParseArgs,
-	type ZodURLSearchParamSerializerSerializeArgs
+	type ZodURLSearchParamSerializerSerializeArgs,
 }
-
