@@ -48,7 +48,8 @@
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"prepublishOnly": "pnpm run build",
-		"test": "vitest run"
+		"test": "vitest run",
+    "types": "tsc --noEmit"
 	},
 	"types": "./dist/index.d.ts"
 }

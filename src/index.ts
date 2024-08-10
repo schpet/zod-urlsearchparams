@@ -133,14 +133,8 @@ function serialize<T extends Schema>({
 	return params
 }
 
-type ZodURLSearchParamSerializerParseArgs<T extends Schema> = Exclude<
-	ParseArgs<T>,
-	"schema" | "defaultData"
->
-type ZodURLSearchParamSerializerSerializeArgs<T extends Schema> = Exclude<
-	SerializeArgs<T>,
-	"schema" | "defaultData"
->
+type ZodURLSearchParamSerializerParseArgs<T extends Schema> = Pick<ParseArgs<T>, "input">
+type ZodURLSearchParamSerializerSerializeArgs<T extends Schema> = Pick<SerializeArgs<T>, "data">
 
 class ZodURLSearchParamSerializer<T extends Schema> {
 	constructor(
