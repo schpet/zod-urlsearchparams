@@ -1,7 +1,7 @@
 {
 	"name": "zod-urlsearchparams",
 	"description": "serializes and deserializes a zod schema to URLSearchParams",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": "Peter Schilling <npm@schpet.com>",
 	"bugs": {
 		"url": "https://github.com/schpet/zod-urlsearchparams/issues"
@@ -49,7 +49,7 @@
 		"lint": "biome lint --write",
 		"prepublishOnly": "pnpm run build",
 		"test": "vitest run",
-    "types": "tsc --noEmit"
+		"types": "tsc --noEmit"
 	},
 	"types": "./dist/index.d.ts"
 }
