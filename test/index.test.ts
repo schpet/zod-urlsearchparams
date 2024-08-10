@@ -30,6 +30,35 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
+test("serialize object with default data", () => {
+	const schema = z.object({
+		name: z.string(),
+		age: z.number(),
+		isStudent: z.boolean(),
+	})
+
+	const defaultData = {
+		name: "John Doe",
+		age: 30,
+		isStudent: false,
+	}
+
+	const values = {
+		name: "Jane Doe",
+		age: 30,  // Same as default
+		isStudent: true,
+	}
+
+	const result = serialize({ schema, data: values, defaultData })
+
+	const expected = new URLSearchParams()
+	expected.append("name", "Jane Doe")
+	expected.append("isStudent", "t")
+
+	assert.equal(result.toString(), expected.toString())
+	assert.equal(result.has("age"), false, "Age should not be included in the result")
+})
+
 test("ZodURLSearchParamSerializer serializes and deserializes simple object", () => {
 	const schema = z.object({
 		name: z.string(),
