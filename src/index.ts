@@ -15,6 +15,7 @@ const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)));
 const stringToBoolean = z
 	.string()
 	.transform((val) => val === "t" || val === "true");
+
 const stringToNumber = z.string().transform((val) => {
 	const num = Number(val);
 	if (Number.isNaN(num)) {
