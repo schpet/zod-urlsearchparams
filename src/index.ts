@@ -13,7 +13,13 @@ const numberToString = z.number().transform((val) => val.toString());
 const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)));
 
 const stringToBoolean = z.string().transform((val) => val === 't');
-const stringToNumber = z.string().transform((val) => Number(val));
+const stringToNumber = z.string().transform((val) => {
+  const num = Number(val);
+  if (isNaN(num)) {
+    throw new Error("Invalid number");
+  }
+  return num;
+});
 const stringToOther = z.string().transform((val) => JSON.parse(atob(val)));
 
 export function parse<T extends Schema>({
