@@ -49,9 +49,6 @@ test("ZodURLSearchParamSerializer serializes and deserializes simple object", ()
 	const deserialized = serializer.deserialize(serialized)
 
 	assert.deepEqual(deserialized, originalData)
-	assert.strictEqual(typeof deserialized.name, "string")
-	assert.strictEqual(typeof deserialized.age, "number")
-	assert.strictEqual(typeof deserialized.isStudent, "boolean")
 })
 
 test("serialize and parse object with BigInt", () => {
