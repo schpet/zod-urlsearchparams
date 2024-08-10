@@ -1,4 +1,11 @@
-import { ZodArray, type ZodObject, type ZodTypeAny, z, type infer as zodInfer, SafeParseReturnType } from "zod"
+import {
+	type SafeParseReturnType,
+	ZodArray,
+	type ZodObject,
+	type ZodTypeAny,
+	z,
+	type infer as zodInfer,
+} from "zod"
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>
 
@@ -125,7 +132,11 @@ function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): 
 	return schema.parse(shapedObject)
 }
 
-function safeParse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): SafeParseReturnType<zodInfer<T>, zodInfer<T>> {
+function safeParse<T extends Schema>({
+	schema,
+	input,
+	defaultData,
+}: ParseArgs<T>): SafeParseReturnType<zodInfer<T>, zodInfer<T>> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.safeParse(shapedObject)
 }
