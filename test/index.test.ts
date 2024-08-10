@@ -37,7 +37,7 @@ test("serialize object with numbers and booleans", () => {
 	})
 
 	const values = { count: 42, isActive: true }
-	const expected = new URLSearchParams({ count: "42", isActive: "true" })
+	const expected = new URLSearchParams({ count: "42", isActive: "t" })
 
 	const result = serialize({ schema, values })
 
