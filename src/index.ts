@@ -103,7 +103,7 @@ type ParseArgs<T extends Schema> = {
 	defaultData?: Partial<zodInfer<T>>
 }
 
-function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): zodInfer<T> {
+function shapeObject<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): Record<string, unknown> {
 	let obj: Record<string, unknown> = defaultData ? { ...defaultData } : {}
 	let schemaShape = schema.shape
 	for (let key in schemaShape) {
@@ -116,7 +116,12 @@ function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): 
 			obj[key] = parseValue(value, schemaType)
 		}
 	}
-	return schema.parse(obj)
+	return obj
+}
+
+function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): zodInfer<T> {
+	const shapedObject = shapeObject({ schema, input, defaultData })
+	return schema.parse(shapedObject)
 }
 
 type SerializeArgs<T extends Schema> = {
@@ -182,9 +187,15 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 	}
 }
 
+function parseSafe<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): ReturnType<T['safeParse']> {
+	const shapedObject = shapeObject({ schema, input, defaultData })
+	return schema.safeParse(shapedObject)
+}
+
 export {
 	ZodURLSearchParamSerializer,
 	parse,
+	parseSafe,
 	serialize,
 	type ParseArgs,
 	type SerializeArgs,
