@@ -173,8 +173,11 @@ test("safeParse with valid and invalid input", () => {
 
 	assert.isFalse(invalidResult.success)
 	if (!invalidResult.success) {
-		assert.isTrue(invalidResult.error instanceof Error)
-		assert.include(invalidResult.error.message, "Invalid number")
+		assert.isTrue(Array.isArray(invalidResult.error.errors))
+		assert.isTrue(invalidResult.error.errors.length > 0)
+		assert.equal(invalidResult.error.errors[0].code, "invalid_type")
+		assert.equal(invalidResult.error.errors[0].expected, "number")
+		assert.equal(invalidResult.error.errors[0].received, "undefined")
 	}
 })
 
