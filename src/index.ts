@@ -2,6 +2,17 @@ import { ZodArray, type ZodObject, type ZodTypeAny, z, type infer as zodInfer } 
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>
 
+function isScalar(value: unknown): boolean {
+	return ["string", "number", "boolean", "bigint"].includes(typeof value) || value instanceof Date
+}
+
+function isEqual(value1: unknown, value2: unknown): boolean {
+	if (isScalar(value1) && isScalar(value2)) {
+		return value1 === value2
+	}
+	return JSON.stringify(value1) === JSON.stringify(value2)
+}
+
 const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"))
 const numberToString = z.number().transform((val) => val.toString())
 const dateToString = z.date().transform((val) => val.toISOString())
@@ -124,7 +135,7 @@ function serialize<T extends Schema>({
 			let schemaType = schemaShape[key]
 
 			// Check if the value is different from the default
-			if (!defaultData || value !== defaultData[key]) {
+			if (!defaultData || !isEqual(value, defaultData[key])) {
 				if (schemaType instanceof ZodArray) {
 					for (let item of value as unknown[]) {
 						params.append(key, serializeValue(item, schemaType.element))
