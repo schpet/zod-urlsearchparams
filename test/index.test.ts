@@ -30,6 +30,35 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
+test("parse URLSearchParams with defaultData and omitted fields", () => {
+	const schema = z.object({
+		name: z.string(),
+		age: z.number(),
+		isStudent: z.boolean(),
+	})
+
+	const defaultData = {
+		name: "John Doe",
+		age: 30,
+		isStudent: false,
+	}
+
+	const input = new URLSearchParams({ name: "Jane Doe" })
+
+	const expected = {
+		name: "Jane Doe",
+		age: 30,
+		isStudent: false,
+	}
+
+	const result = parse({ schema, input, defaultData })
+
+	assert.deepEqual(result, expected)
+	assert.notEqual(result.name, defaultData.name, "Name should be from input, not default")
+	assert.equal(result.age, defaultData.age, "Age should be from default")
+	assert.equal(result.isStudent, defaultData.isStudent, "isStudent should be from default")
+})
+
 test("serialize object with default data", () => {
 	const schema = z.object({
 		name: z.string(),
