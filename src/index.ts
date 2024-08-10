@@ -133,18 +133,22 @@ function serialize<T extends Schema>({
 	return params
 }
 
-type ZodURLSearchParamSerializerParseArgs = Exclude<ParseArgs<Schema>, "schema">
-type ZodURLSearchParamSerializerSerializeArgs<T> = Exclude<
-	SerializeArgs<Schema>,
+type ZodURLSearchParamSerializerParseArgs<T extends Schema> = Exclude<
+	ParseArgs<T>,
 	"schema" | "defaultData"
-> & { data: T }
+>
+type ZodURLSearchParamSerializerSerializeArgs<T extends Schema> = Exclude<
+	SerializeArgs<T>,
+	"schema" | "defaultData"
+>
+
 class ZodURLSearchParamSerializer<T extends Schema> {
 	constructor(
 		private schema: T,
 		private defaultData?: Partial<zodInfer<T>>,
 	) {}
 
-	serialize(args: ZodURLSearchParamSerializerSerializeArgs<zodInfer<T>>): URLSearchParams {
+	serialize(args: ZodURLSearchParamSerializerSerializeArgs<T>): URLSearchParams {
 		return serialize({
 			...args,
 			schema: this.schema,
@@ -152,7 +156,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		})
 	}
 
-	deserialize(args: ZodURLSearchParamSerializerParseArgs): zodInfer<T> {
+	deserialize(args: ZodURLSearchParamSerializerParseArgs<T>): zodInfer<T> {
 		return parse({
 			...args,
 			schema: this.schema,
@@ -168,5 +172,6 @@ export {
 	type ParseArgs,
 	type SerializeArgs,
 	type ZodURLSearchParamSerializerParseArgs,
-	type ZodURLSearchParamSerializerSerializeArgs,
+	type ZodURLSearchParamSerializerSerializeArgs
 }
+
