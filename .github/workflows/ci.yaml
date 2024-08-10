@@ -6,9 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+# https://pnpm.io/continuous-integration#github-actions
 jobs:
-  # https://pnpm.io/continuous-integration#github-actions
-  ci:
+  biome:
     if: "!contains(github.event.head_commit.message, 'skip-ci')"
     runs-on: ubuntu-latest
     steps:
@@ -18,8 +18,8 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
           cache: "pnpm"
+          node-version-file: ".node-version"
       - name: Install dependencies
         run: pnpm install
       - name: Run CI
