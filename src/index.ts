@@ -10,6 +10,7 @@ type Schema = ZodObject<Record<string, ZodTypeAny>>;
 
 const booleanToString = z.boolean().transform((val) => val ? 't' : 'f');
 const numberToString = z.number().transform((val) => val.toString());
+const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)));
 
 export function parse<T extends Schema>({
 	schema,
@@ -62,8 +63,7 @@ export function serialize<T extends Schema>({
 			} else if (schemaType instanceof z.ZodBoolean) {
 				params.append(key, booleanToString.parse(value));
 			} else {
-				let encodedValue = btoa(JSON.stringify(value));
-				params.append(key, encodedValue);
+				params.append(key, otherToString.parse(value));
 			}
 		}
 	}
