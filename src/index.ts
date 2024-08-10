@@ -80,6 +80,9 @@ function serializeValue(value: unknown, schemaType: ZodTypeAny): string {
 type ParseArgs<T extends Schema> = {
 	schema: T
 	input: URLSearchParams
+	/**
+	 * Default data to use if the key is not present in the input, shallow merge
+	 */
 	defaultData?: Partial<zodInfer<T>>
 }
 
@@ -102,6 +105,9 @@ function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): 
 type SerializeArgs<T extends Schema> = {
 	schema: T
 	data: zodInfer<T>
+	/**
+	 * Default data to use if the key is not present in the input, shallow merge
+	 */
 	defaultData?: Partial<zodInfer<T>>
 }
 function serialize<T extends Schema>({
