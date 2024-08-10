@@ -34,9 +34,9 @@ const utf8ToBase64 = (str: string): string => {
 
 const base64ToUtf8 = (str: string): string => {
 	// Add padding if necessary
-	str = str.padEnd(str.length + ((4 - (str.length % 4)) % 4), "=")
+	const paddedStr = str.padEnd(str.length + ((4 - (str.length % 4)) % 4), "=")
 	return decodeURIComponent(
-		atob(str)
+		atob(paddedStr)
 			.split("")
 			.map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
 			.join(""),
