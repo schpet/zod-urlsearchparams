@@ -111,7 +111,7 @@ function serialize<T extends Schema>({
 	return params
 }
 
-class Serializer<T extends Schema> {
+class URLParamSerializer<T extends Schema> {
 	constructor(
 		private schema: T,
 		private defaultData?: Partial<zodInfer<T>>,
@@ -126,4 +126,4 @@ class Serializer<T extends Schema> {
 	}
 }
 
-export { parse, serialize, Serializer }
+export { parse, serialize, URLParamSerializer }
