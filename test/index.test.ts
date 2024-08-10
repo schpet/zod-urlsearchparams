@@ -173,7 +173,8 @@ test("safeParse with valid and invalid input", () => {
 
 	assert.isFalse(invalidResult.success)
 	if (!invalidResult.success) {
-		assert.isTrue(invalidResult.error instanceof z.ZodError)
+		assert.isTrue(invalidResult.error instanceof Error)
+		assert.include(invalidResult.error.message, "Invalid number")
 	}
 })
 

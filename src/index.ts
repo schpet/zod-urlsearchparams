@@ -128,9 +128,13 @@ function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): 
 	return schema.parse(shapedObject)
 }
 
-function safeParse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>)  {
-	const shapedObject = shape({ schema, input, defaultData })
-	return schema.safeParse(shapedObject)
+function safeParse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>) {
+	try {
+		const shapedObject = shape({ schema, input, defaultData })
+		return schema.safeParse(shapedObject)
+	} catch (error) {
+		return { success: false, error: error instanceof Error ? error : new Error(String(error)) }
+	}
 }
 
 type SerializeArgs<T extends Schema> = {
