@@ -29,6 +29,19 @@ function parseScalar(value: string, schemaType: ZodTypeAny): unknown {
 	return stringToOther.parse(value)
 }
 
+function serializeScalar(value: unknown, schemaType: ZodTypeAny): string {
+	if (schemaType instanceof z.ZodNumber) {
+		return numberToString.parse(value)
+	}
+	if (schemaType instanceof z.ZodBoolean) {
+		return booleanToString.parse(value)
+	}
+	if (schemaType instanceof z.ZodString) {
+		return String(value)
+	}
+	return otherToString.parse(value)
+}
+
 export function parse<T extends Schema>({
 	schema,
 	input,
@@ -69,16 +82,10 @@ export function serialize<T extends Schema>({
 			let schemaType = schemaShape[key]
 			if (schemaType instanceof ZodArray) {
 				for (let item of value as unknown[]) {
-					params.append(key, String(item))
+					params.append(key, serializeScalar(item, schemaType.element))
 				}
-			} else if (schemaType instanceof z.ZodString) {
-				params.append(key, String(value))
-			} else if (schemaType instanceof z.ZodNumber) {
-				params.append(key, numberToString.parse(value))
-			} else if (schemaType instanceof z.ZodBoolean) {
-				params.append(key, booleanToString.parse(value))
 			} else {
-				params.append(key, otherToString.parse(value))
+				params.append(key, serializeScalar(value, schemaType))
 			}
 		}
 	}
