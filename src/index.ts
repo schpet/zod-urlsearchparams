@@ -2,20 +2,20 @@ import { ZodArray, type ZodObject, type ZodTypeAny, z, type infer as zodInfer } 
 
 type Schema = ZodObject<Record<string, ZodTypeAny>>
 
-export type ParseArgs<T extends Schema> = {
+type ParseArgs<T extends Schema> = {
 	schema: T
 	input: URLSearchParams
 	defaultData?: Partial<zodInfer<T>>
 }
 
-export type SerializeArgs<T extends Schema> = {
+type SerializeArgs<T extends Schema> = {
 	schema: T
 	data: zodInfer<T>
 	defaultData?: Partial<zodInfer<T>>
 }
 
-export type ZodURLSearchParamSerializerParseArgs = Exclude<ParseArgs<Schema>, "schema">
-export type ZodURLSearchParamSerializerSerializeArgs<T> = Exclude<
+type ZodURLSearchParamSerializerParseArgs = Exclude<ParseArgs<Schema>, "schema">
+type ZodURLSearchParamSerializerSerializeArgs<T> = Exclude<
 	SerializeArgs<Schema>,
 	"schema" | "defaultData"
 > & { data: T }
@@ -125,14 +125,18 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 
 	serialize(args: ZodURLSearchParamSerializerSerializeArgs<zodInfer<T>>): URLSearchParams {
 		return serialize({
-			schema: this.schema,
 			...args,
+			schema: this.schema,
 			defaultData: this.defaultData,
 		})
 	}
 
 	deserialize(args: ZodURLSearchParamSerializerParseArgs): zodInfer<T> {
-		return parse({ schema: this.schema, ...args, defaultData: this.defaultData })
+		return parse({
+			...args,
+			schema: this.schema,
+			defaultData: this.defaultData,
+		})
 	}
 }
 
