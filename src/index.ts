@@ -24,7 +24,15 @@ const booleanToString = z.boolean().transform((val) => (val ? "t" : "f"))
 const numberToString = z.number().transform((val) => val.toString())
 const dateToString = z.date().transform((val) => val.toISOString())
 const bigIntToString = z.bigint().transform((val) => val.toString())
-const otherToString = z.unknown().transform((val) => btoa(JSON.stringify(val)))
+const utf8ToBase64 = (str: string): string => {
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))))
+}
+
+const base64ToUtf8 = (str: string): string => {
+  return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''))
+}
+
+const otherToString = z.unknown().transform((val) => utf8ToBase64(JSON.stringify(val)))
 
 const stringToBoolean = z.string().transform((val) => val === "t" || val === "true")
 const stringToNumber = z.string().transform((val) => {
@@ -36,7 +44,7 @@ const stringToNumber = z.string().transform((val) => {
 })
 const stringToDate = z.string().transform((val) => new Date(val))
 const stringToBigInt = z.string().transform((val) => BigInt(val))
-const stringToOther = z.string().transform((val) => JSON.parse(atob(val)))
+const stringToOther = z.string().transform((val) => JSON.parse(base64ToUtf8(val)))
 
 function parseValue(value: string, schemaType: ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodNumber) {
