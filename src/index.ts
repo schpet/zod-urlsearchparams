@@ -73,14 +73,14 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 }
 
 function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
+	if (schemaType instanceof z.ZodString || schemaType instanceof z.ZodEnum || schemaType instanceof z.ZodNativeEnum) {
+		return value as string
+	}
 	if (schemaType instanceof z.ZodNumber) {
 		return numberToString.parse(value)
 	}
 	if (schemaType instanceof z.ZodBoolean) {
 		return booleanToString.parse(value)
-	}
-	if (schemaType instanceof z.ZodString) {
-		return value as string
 	}
 	if (schemaType instanceof z.ZodDate) {
 		return dateToString.parse(value)
@@ -88,9 +88,7 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 	if (schemaType instanceof z.ZodBigInt) {
 		return bigIntToString.parse(value)
 	}
-	if (schemaType instanceof z.ZodEnum) {
-		return value as string
-	}
+	console.log("did not match any type", {value, schemaType})
 	return otherToString.parse(value)
 }
 
@@ -203,5 +201,6 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+
