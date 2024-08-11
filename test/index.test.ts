@@ -269,14 +269,17 @@ test("lenientParse with invalid enum value", () => {
 	const schema = z.object({
 		a: z.enum(["A1", "A2", "A3"]),
 		b: z.enum(["B1", "B2", "B3"]),
+		c: z.number(),
+		d: z.string(),
 	})
 
-	const input = new URLSearchParams({ a: "A1", b: "InvalidB" })
+	const input = new URLSearchParams({ a: "A1", b: "InvalidB", c: "not a number", d: "valid string" })
 
 	const result = lenientParse({ schema, input })
 
-	assert.deepEqual(result, { a: "A1" })
+	assert.deepEqual(result, { a: "A1", d: "valid string" })
 	assert.notProperty(result, "b", "The 'b' field should be dropped due to invalid enum value")
+	assert.notProperty(result, "c", "The 'c' field should be dropped due to invalid number")
 })
 
 test("serialize object with numbers and booleans", () => {
