@@ -30,7 +30,7 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
-test("serialize object with array of strings", () => {
+test("serialize object with array of enums", () => {
 	const schema = z.object({
 		statuses: z.array(z.enum(["PUBLISHED", "UNPUBLISHED"])),
 	})
@@ -220,7 +220,7 @@ test("serialize object with numbers and booleans", () => {
 	assert.equal(result.toString(), expected.toString())
 })
 
-test("serialize object with array of tags", () => {
+test("serialize object with array of strings", () => {
 	const schema = z.object({
 		tags: z.array(z.string()),
 	})
@@ -234,6 +234,7 @@ test("serialize object with array of tags", () => {
 	const result = serialize({ schema, data: values })
 
 	assert.equal(result.toString(), expected.toString())
+	assert.equal(result.toString(), "tags=tag1&tags=tag2&tags=tag3")
 })
 
 test("parse URLSearchParams to object", () => {
