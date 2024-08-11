@@ -188,7 +188,14 @@ function lenientParse<T extends Schema>({
 		}
 	}
 
-	return validFields
+	// Attempt to safeParse the validFields
+	const finalResult = schema.safeParse(validFields)
+	if (finalResult.success) {
+		return finalResult.data
+	}
+
+	// If safeParse fails, return defaultData or an empty object
+	return defaultData || {}
 }
 
 type SerializeArgs<T extends Schema> = {
