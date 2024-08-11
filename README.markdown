@@ -13,6 +13,7 @@ convert a zod object to a URLSearchParam and vice versa.
 npm i zod-urlsearchparams
 pnpm i zod-urlsearchparams
 yarn add zod-urlsearchparams
+ni zod-urlsearchparams
 ```
 
 ## examples
