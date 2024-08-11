@@ -1,9 +1,10 @@
 # zod urlsearchparams
 
-solving the age old problem of reading and writing url search parameters.
+convert a zod object to a URLSearchParam and vice versa.
 
 - minimal urls, scalars are readable and editable by humans
 - vectors are encoded with base64
+- allows gracefully falling back to defaults with `lenientParse` 
 - zero dependencies outside of zod
 
 ## install
