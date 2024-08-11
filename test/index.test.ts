@@ -224,6 +224,19 @@ test("serialize object with array of strings", () => {
 	assert.equal(result.toString(), expected.toString())
 })
 
+test("serialize and deserialize object with array of objects", () => {
+	const schema = z.object({
+		statuses: z.array(z.object({ label: z.string() })),
+	})
+
+	const originalData = { statuses: [{ label: "a" }, { label: "b" }] }
+	const serialized = serialize({ schema, data: originalData })
+	const deserialized = parse({ schema, input: serialized })
+
+	assert.deepEqual(serialized.getAll("statuses"), ['{"label":"a"}', '{"label":"b"}'])
+	assert.deepEqual(deserialized, originalData)
+})
+
 test("parse URLSearchParams to object", () => {
 	const schema = z.object({
 		a: z.string(),
