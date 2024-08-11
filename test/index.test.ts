@@ -273,7 +273,12 @@ test("lenientParse with invalid enum value", () => {
 		d: z.string(),
 	})
 
-	const input = new URLSearchParams({ a: "A1", b: "InvalidB", c: "not a number", d: "valid string" })
+	const input = new URLSearchParams({
+		a: "A1",
+		b: "InvalidB",
+		c: "not a number",
+		d: "valid string",
+	})
 
 	const result = lenientParse({ schema, input })
 
