@@ -1,0 +1,3 @@
+- Avoid casting with as whenever possible
+- Avoid unsafe types like any
+- Prefer checking for presence with 'val == null' instead of '!val'
