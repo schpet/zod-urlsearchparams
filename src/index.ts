@@ -253,6 +253,14 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 			defaultData: this.defaultData,
 		})
 	}
+
+	safeParse(input: URLSearchParams): z.SafeParseReturnType<z.infer<T>, z.infer<T>> {
+		return safeParse({
+			input,
+			schema: this.schema,
+			defaultData: this.defaultData,
+		})
+	}
 }
 
 export {

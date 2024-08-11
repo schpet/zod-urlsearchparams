@@ -136,6 +136,33 @@ test("ZodURLSearchParamSerializer serializes and deserializes simple object", ()
 	assert.deepEqual(deserialized, originalData)
 })
 
+test("ZodURLSearchParamSerializer safeParse with valid and invalid input", () => {
+	const schema = z.object({
+		age: z.number(),
+		name: z.string(),
+	})
+
+	const serializer = new ZodURLSearchParamSerializer(schema)
+
+	const validInput = new URLSearchParams({ age: "30", name: "John" })
+	const invalidInput = new URLSearchParams({ age: "not a number", name: "John" })
+
+	const validResult = serializer.safeParse(validInput)
+	const invalidResult = serializer.safeParse(invalidInput)
+
+	assert.isTrue(validResult.success)
+	if (validResult.success) {
+		assert.deepEqual(validResult.data, { age: 30, name: "John" })
+	}
+
+	assert.isFalse(invalidResult.success)
+	if (!invalidResult.success) {
+		assert.isTrue(Array.isArray(invalidResult.error.errors))
+		assert.isTrue(invalidResult.error.errors.length > 0)
+		assert.equal(invalidResult.error.errors[0].code, "invalid_type")
+	}
+})
+
 test("serialize and parse object with BigInt", () => {
 	const schema = z.object({
 		id: z.bigint(),
