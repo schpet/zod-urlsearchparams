@@ -35,7 +35,7 @@ test("serialize object with array of enums", () => {
 		statuses: z.array(z.enum(["PUBLISHED", "UNPUBLISHED"])),
 	})
 
-	const values = { statuses: ["PUBLISHED", "UNPUBLISHED"] } as const
+	const values = schema.parse({ statuses: ["PUBLISHED", "UNPUBLISHED"] })
 	const expected = new URLSearchParams()
 	expected.append("statuses", "PUBLISHED")
 	expected.append("statuses", "UNPUBLISHED")
