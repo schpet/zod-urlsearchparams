@@ -210,7 +210,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		})
 	}
 
-	deserialize(input: URLSearchParams): z.infer<T> {
+	parse(input: URLSearchParams): z.infer<T> {
 		return parse({
 			input,
 			schema: this.schema,
@@ -226,5 +226,6 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+
