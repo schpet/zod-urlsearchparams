@@ -37,14 +37,19 @@ const utf8ToBase64 = (str: string): string => {
 }
 
 const base64ToUtf8 = (str: string): string => {
-	// Add padding if necessary
-	const paddedStr = str.padEnd(str.length + ((4 - (str.length % 4)) % 4), "=")
-	return decodeURIComponent(
-		atob(paddedStr)
-			.split("")
-			.map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
-			.join(""),
-	)
+	try {
+		// Add padding if necessary
+		const paddedStr = str.padEnd(str.length + ((4 - (str.length % 4)) % 4), "=")
+		return decodeURIComponent(
+			atob(paddedStr)
+				.split("")
+				.map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+				.join(""),
+		)
+	} catch (error) {
+		console.error("Error decoding base64:", error)
+		return ""
+	}
 }
 
 const otherToString = z.unknown().transform((val) => utf8ToBase64(JSON.stringify(val)))
