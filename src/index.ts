@@ -78,7 +78,7 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 				(option) =>
 					option instanceof z.ZodLiteral ||
 					option instanceof z.ZodEnum ||
-					option instanceof z.ZodNativeEnum
+					option instanceof z.ZodNativeEnum,
 			))
 	) {
 		return value
@@ -97,7 +97,7 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 				(option) =>
 					option instanceof z.ZodLiteral ||
 					option instanceof z.ZodEnum ||
-					option instanceof z.ZodNativeEnum
+					option instanceof z.ZodNativeEnum,
 			))
 	) {
 		return value as string
