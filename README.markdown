@@ -4,33 +4,5 @@ A library for serializing and parsing URLSearchParams using Zod schemas.
 
 ## Example
 
-```typescript
-import { z } from "zod";
-import { ZodURLSearchParamSerializer } from "zod-urlsearchparams";
-
-// Define your schema
-const schema = z.object({
-  name: z.string(),
-  age: z.number(),
-  hobbies: z.array(z.string()),
-});
-
-// Create a serializer
-const serializer = new ZodURLSearchParamSerializer(schema);
-
-// Data to serialize
-const data = {
-  name: "John Doe",
-  age: 30,
-  hobbies: ["reading", "cycling"],
-};
-
-// Serialize the data
-const params = serializer.serialize(data);
-
-console.log(params.toString());
-// Output: name=John%20Doe&age=30&hobbies=reading&hobbies=cycling
-```
-
-This example demonstrates how to use the `ZodURLSearchParamSerializer` to serialize an object into URLSearchParams based on a Zod schema.
+For a usage example, see [docs/readme-example.ts](docs/readme-example.ts).
 
