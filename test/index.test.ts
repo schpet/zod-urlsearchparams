@@ -265,6 +265,20 @@ test("serialize and parse object with Zod union of literals", () => {
 	assert.strictEqual(anotherSerialized.get("role"), "guest")
 })
 
+test("lenientParse with invalid enum value", () => {
+	const schema = z.object({
+		a: z.enum(["A1", "A2", "A3"]),
+		b: z.enum(["B1", "B2", "B3"]),
+	})
+
+	const input = new URLSearchParams({ a: "A1", b: "InvalidB" })
+
+	const result = lenientParse({ schema, input })
+
+	assert.deepEqual(result, { a: "A1" })
+	assert.notProperty(result, "b", "The 'b' field should be dropped due to invalid enum value")
+})
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
