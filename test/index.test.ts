@@ -45,6 +45,20 @@ test("serialize object with array of strings", () => {
 	assert.equal(result.toString(), "statuses=PUBLISHED&statuses=UNPUBLISHED")
 })
 
+test("serialize and deserialize object with array of objects", () => {
+	const schema = z.object({
+		statuses: z.array(z.object({ label: z.string() })),
+	})
+
+	const originalData = { statuses: [{ label: "a" }, { label: "b" }] }
+	const serialized = serialize({ schema, data: originalData })
+	const deserialized = parse({ schema, input: serialized })
+
+	assert.deepEqual(serialized.getAll("statuses"), ['{"label":"a"}', '{"label":"b"}'])
+	assert.deepEqual(deserialized, originalData)
+})
+
+
 test("parse URLSearchParams with defaultData and omitted fields", () => {
 	const schema = z.object({
 		name: z.string(),
@@ -208,7 +222,7 @@ test("serialize object with numbers and booleans", () => {
 	assert.equal(result.toString(), expected.toString())
 })
 
-test("serialize object with array of strings", () => {
+test("serialize object with array of tags", () => {
 	const schema = z.object({
 		tags: z.array(z.string()),
 	})
@@ -222,19 +236,6 @@ test("serialize object with array of strings", () => {
 	const result = serialize({ schema, data: values })
 
 	assert.equal(result.toString(), expected.toString())
-})
-
-test("serialize and deserialize object with array of objects", () => {
-	const schema = z.object({
-		statuses: z.array(z.object({ label: z.string() })),
-	})
-
-	const originalData = { statuses: [{ label: "a" }, { label: "b" }] }
-	const serialized = serialize({ schema, data: originalData })
-	const deserialized = parse({ schema, input: serialized })
-
-	assert.deepEqual(serialized.getAll("statuses"), ['{"label":"a"}', '{"label":"b"}'])
-	assert.deepEqual(deserialized, originalData)
 })
 
 test("parse URLSearchParams to object", () => {

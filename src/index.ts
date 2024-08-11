@@ -13,8 +13,7 @@ function isScalar(value: unknown): boolean {
 		typeof value === "number" ||
 		typeof value === "boolean" ||
 		typeof value === "bigint" ||
-		value instanceof Date ||
-		(typeof value === "object" && value !== null && "enum" in value)
+		value instanceof Date
 	)
 }
 
@@ -218,5 +217,6 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+
