@@ -8,7 +8,7 @@ solving the age old problem of reading and writing url search parameters.
 
 ## examples
 
-note: use the ZodURLSearchParamSerializer class api, but `serialize`, `parse`, `shape`, `lenientParse` etc are exported on their own too.
+note: the following examples use the ZodURLSearchParamSerializer class api, but `serialize`, `parse`, `shape`, `lenientParse` etc are exported on their own too.
 
 ### serializing
 
