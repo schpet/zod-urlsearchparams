@@ -206,6 +206,26 @@ test("safeParse with valid and invalid input", () => {
 	}
 })
 
+test("serialize and parse object with native enum", () => {
+	enum Color {
+		Red = "RED",
+		Green = "GREEN",
+		Blue = "BLUE"
+	}
+
+	const schema = z.object({
+		color: z.nativeEnum(Color),
+	})
+
+	const originalData = { color: Color.Green }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(parsed.color, Color.Green)
+	assert.strictEqual(serialized.get("color"), "GREEN")
+})
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
