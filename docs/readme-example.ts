@@ -1,4 +1,4 @@
-import { assert } from "vitest"
+import assert from "assert"
 import { z } from "zod"
 import { ZodURLSearchParamSerializer } from "../dist"
 
@@ -22,5 +22,5 @@ const data = {
 // Serialize the data
 const params = serializer.serialize(data)
 
-
-assert.equal(params.toString(), "name=John%20Doe&age=30&hobbies=reading&hobbies=cycling")
+// Assert the serialized output
+assert.strictEqual(params.toString(), "name=John%20Doe&age=30&hobbies=reading&hobbies=cycling")
