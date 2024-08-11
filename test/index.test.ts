@@ -210,7 +210,7 @@ test("serialize and parse object with native enum", () => {
 	enum Color {
 		Red = "RED",
 		Green = "GREEN",
-		Blue = "BLUE"
+		Blue = "BLUE",
 	}
 
 	const schema = z.object({
