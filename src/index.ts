@@ -75,7 +75,7 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 		schemaType instanceof z.ZodLiteral ||
 		(schemaType instanceof z.ZodUnion &&
 			schemaType._def.options.every(
-				(option) =>
+				(option: z.ZodTypeAny) =>
 					option instanceof z.ZodLiteral ||
 					option instanceof z.ZodEnum ||
 					option instanceof z.ZodNativeEnum,
@@ -94,7 +94,7 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 		schemaType instanceof z.ZodLiteral ||
 		(schemaType instanceof z.ZodUnion &&
 			schemaType._def.options.every(
-				(option) =>
+				(option: z.ZodTypeAny) =>
 					option instanceof z.ZodLiteral ||
 					option instanceof z.ZodEnum ||
 					option instanceof z.ZodNativeEnum,
