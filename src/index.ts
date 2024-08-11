@@ -146,43 +146,6 @@ function shape<T extends Schema>({
 	return obj
 }
 
-/**
- * Parses URLSearchParams into an object based on the provided Zod schema.
- *
- * @param options - The options for parsing.
- * @param options.schema - The Zod schema to validate against.
- * @param options.input - The URLSearchParams to parse.
- * @param options.defaultData - Optional default data to use if keys are missing from the input.
- * @returns The parsed and validated object.
- *
- * @example
- * const schema = z.object({
- *   name: z.string(),
- *   age: z.number(),
- *   hobbies: z.array(z.string())
- * });
- *
- * const input = new URLSearchParams('name=John&age=30&hobbies=reading&hobbies=cycling');
- * const result = parse({ schema, input });
- *
- * console.log(result);
- * // Output: { name: "John", age: 30, hobbies: ["reading", "cycling"] }
- *
- * @example
- * // With default data
- * const schema = z.object({
- *   name: z.string(),
- *   age: z.number(),
- *   city: z.string()
- * });
- *
- * const input = new URLSearchParams('name=Jane&age=25');
- * const defaultData = { city: "New York" };
- * const result = parse({ schema, input, defaultData });
- *
- * console.log(result);
- * // Output: { name: "Jane", age: 25, city: "New York" }
- */
 function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): z.infer<T> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.parse(shapedObject)
