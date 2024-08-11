@@ -164,13 +164,13 @@ function lenientParse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): Partial<z.infer<T>> {
+}: Omit<ParseArgs<T>, 'defaultData'> & { defaultData: z.infer<T> }): z.infer<T> {
 	const result = safeParse({ schema, input, defaultData })
 	if (result.success) {
 		return result.data
 	}
 
-	const validFields: Partial<z.infer<T>> = {}
+	const validFields: z.infer<T> = { ...defaultData }
 	const shapedObject = shape({ schema, input, defaultData })
 
 	for (const key in schema.shape) {
@@ -181,21 +181,19 @@ function lenientParse<T extends Schema>({
 				validFields[key as keyof z.infer<T>] = parsedValue
 			}
 		} catch (error) {
-			// If parsing fails, use the defaultData value if available
-			if (defaultData && key in defaultData) {
-				validFields[key as keyof z.infer<T>] = defaultData[key as keyof z.infer<T>]
-			}
+			// If parsing fails, use the defaultData value
+			validFields[key as keyof z.infer<T>] = defaultData[key as keyof z.infer<T>]
 		}
 	}
 
 	// Attempt to safeParse the validFields
-	const finalResult = schema.parse(validFields)
+	const finalResult = schema.safeParse(validFields)
 	if (finalResult.success) {
 		return finalResult.data
 	}
 
-	// If safeParse fails, return defaultData or an empty object
-	return defaultData || {}
+	// If safeParse fails, return defaultData
+	return defaultData
 }
 
 type SerializeArgs<T extends Schema> = {
