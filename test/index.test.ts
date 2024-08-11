@@ -1,6 +1,6 @@
 import { assert, test } from "vitest"
 import { z } from "zod"
-import { ZodURLSearchParamSerializer, parse, safeParse, serialize } from "../src"
+import { ZodURLSearchParamSerializer, parse, safeParse, serialize, lenientParse } from "../src"
 
 test("serialize basic object", () => {
 	const schema = z.object({
