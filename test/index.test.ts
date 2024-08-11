@@ -281,8 +281,8 @@ test("lenientParse with invalid enum value", () => {
 	})
 
 	const defaultData = {
-		a: "A2",
-		b: "B1",
+		a: "A2" as const,
+		b: "B1" as const,
 		c: 0,
 		d: "default string",
 	}
