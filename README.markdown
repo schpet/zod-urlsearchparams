@@ -31,10 +31,11 @@ const schema = z.object({ name: z.string(), age: z.number(), hobbies: z.array(z.
 // setup the serializer
 const serializer = new ZodURLSearchParamSerializer(schema)
 
+// serialize some data to url params
 const data = { name: "John Doe", age: 30, hobbies: ["reading", "cycling"] }
-
-// serialize it to url params, see how it looks–
 const params = serializer.serialize(data)
+
+// see how it looks–
 assert.strictEqual(params.toString(), "name=John+Doe&age=30&hobbies=reading&hobbies=cycling")
 ```
 
