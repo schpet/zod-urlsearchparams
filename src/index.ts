@@ -1,6 +1,6 @@
-import { type SafeParseReturnType, ZodArray, type ZodObject, type ZodTypeAny, z } from "zod"
+import { z } from "zod"
 
-type Schema = ZodObject<Record<string, ZodTypeAny>>
+type Schema = z.ZodObject<Record<string, z.ZodTypeAny>>
 
 function isScalar(value: unknown): boolean {
 	return (
@@ -53,7 +53,7 @@ const stringToDate = z.string().transform((val) => new Date(val))
 const stringToBigInt = z.string().transform((val) => BigInt(val))
 const stringToOther = z.string().transform((val) => JSON.parse(base64ToUtf8(val)))
 
-function parseValue(value: string, schemaType: ZodTypeAny): unknown {
+function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodNumber) {
 		return stringToNumber.parse(value)
 	}
@@ -72,7 +72,7 @@ function parseValue(value: string, schemaType: ZodTypeAny): unknown {
 	return stringToOther.parse(value)
 }
 
-function serializeValue(value: unknown, schemaType: ZodTypeAny): string {
+function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 	if (schemaType instanceof z.ZodNumber) {
 		return numberToString.parse(value)
 	}
@@ -110,7 +110,7 @@ function shape<T extends Schema>({
 	for (let key in schemaShape) {
 		let values = input.getAll(key)
 		let schemaType = schemaShape[key]
-		if (schemaType instanceof ZodArray) {
+		if (schemaType instanceof z.ZodArray) {
 			obj[key] = values.map((value) => parseValue(value, schemaType.element))
 		} else if (values.length > 0) {
 			let value = values[values.length - 1]
@@ -129,7 +129,7 @@ function safeParse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): SafeParseReturnType<z.infer<T>, z.infer<T>> {
+}: ParseArgs<T>): z.SafeParseReturnType<z.infer<T>, z.infer<T>> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.safeParse(shapedObject)
 }
@@ -157,7 +157,7 @@ function serialize<T extends Schema>({
 
 			// Check if the value is different from the default
 			if (!defaultData || !isEqual(value, defaultData[key])) {
-				if (schemaType instanceof ZodArray) {
+				if (schemaType instanceof z.ZodArray) {
 					for (let item of value as unknown[]) {
 						params.append(key, serializeValue(item, schemaType.element))
 					}
@@ -195,11 +195,11 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 }
 
 export {
-	ZodURLSearchParamSerializer,
 	parse,
 	safeParse,
 	serialize,
 	shape,
+	ZodURLSearchParamSerializer,
 	type ParseArgs,
 	type SerializeArgs,
 }

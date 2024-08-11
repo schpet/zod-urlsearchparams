@@ -37,7 +37,7 @@
 		"url": "git+https://github.com/schpet/zod-urlsearchparams.git"
 	},
 	"scripts": {
-		"build": "tsup --dts",
+		"build": "tsup",
 		"check": "biome check --write --unsafe",
 		"ci": "biome ci",
 		"format": "biome format --write",
@@ -45,14 +45,6 @@
 		"prepublishOnly": "pnpm run build",
 		"test": "vitest run",
 		"types": "tsc --noEmit"
-	},
-	"tsup": {
-		"entry": [
-			"src/index.ts"
-		],
-		"splitting": false,
-		"sourcemap": true,
-		"clean": true
 	},
 	"types": "./dist/index.d.ts"
 }
