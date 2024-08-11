@@ -6,6 +6,14 @@ solving the age old problem of reading and writing url search parameters.
 - vectors are encoded with base64
 - zero dependencies outside of zod
 
+## install
+
+```bash
+npm i zod-urlsearchparams
+pnpm i zod-urlsearchparams
+yarn add zod-urlsearchparams
+```
+
 ## examples
 
 note: the following examples use the ZodURLSearchParamSerializer class api, but `serialize`, `parse`, `shape`, `lenientParse` etc are exported on their own too.
