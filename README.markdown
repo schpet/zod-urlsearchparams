@@ -1,8 +1,14 @@
 # zod urlsearchparams
 
-A library for serializing and parsing URLSearchParams using Zod schemas.
+solving the age old problem of reading and writing urls.
+
+- minimal urls, scalars are readable and editable by humans
+- vectors are encoded with base64
+- zero dependencies
 
 ## examples
+
+note: use the ZodURLSearchParamSerializer class api, but `serialize`, `parse`, `shape`, `lenientParse` etc are exported on their own too.
 
 ### serializing
 
@@ -28,7 +34,7 @@ assert.strictEqual(params.toString(), "name=John+Doe&age=30&hobbies=reading&hobb
 
 ```ts
 // sometimes people will visit a url that doesn't conform
-const invalidParams = new URLSearchParams("name=Jane+Doe&age=invalid&hobbies=reading&hobbies=gardening")
+const invalidParams = new URLSearchParams("name=Jane+Doe&age=nope&hobbies=reading&hobbies=gardening")
 
 // so we provide defaults to fall back to
 const defaultData: z.infer<typeof schema> = {
@@ -43,7 +49,7 @@ const lenientResult = serializer.lenientParse(invalidParams, defaultData)
 // it'll drop the invalid field and use the default value
 assert.deepStrictEqual(lenientResult, {
 	name: "Jane Doe",
-	age: 25, // Uses default value because 'invalid' can't be parsed as a number
+	age: 25, // Uses default value because 'nope' can't be parsed as a number
 	hobbies: ["reading", "gardening"],
 })
 ```
