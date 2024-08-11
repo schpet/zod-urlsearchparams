@@ -13,7 +13,8 @@ function isScalar(value: unknown): boolean {
 		typeof value === "number" ||
 		typeof value === "boolean" ||
 		typeof value === "bigint" ||
-		value instanceof Date
+		value instanceof Date ||
+		(typeof value === "object" && value !== null && "enum" in value)
 	)
 }
 
@@ -83,7 +84,6 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 }
 
 function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
-	console.log(schemaType)
 	if (schemaType instanceof z.ZodNumber) {
 		return numberToString.parse(value)
 	}
@@ -91,13 +91,16 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 		return booleanToString.parse(value)
 	}
 	if (schemaType instanceof z.ZodString) {
-		return String(value)
+		return value as string
 	}
 	if (schemaType instanceof z.ZodDate) {
 		return dateToString.parse(value)
 	}
 	if (schemaType instanceof z.ZodBigInt) {
 		return bigIntToString.parse(value)
+	}
+	if (schemaType instanceof z.ZodEnum) {
+		return value as string
 	}
 	return otherToString.parse(value)
 }
