@@ -1,4 +1,4 @@
-import assert from "assert"
+import assert from "node:assert"
 import { z } from "zod"
 import { ZodURLSearchParamSerializer } from "../dist"
 
