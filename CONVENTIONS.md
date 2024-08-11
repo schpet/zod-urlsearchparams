@@ -2,3 +2,4 @@
 - Avoid unsafe types like any
 - Prefer checking for presence with 'val == null' instead of '!val'
 - Use unique test identifiers
+- Don't add comments
