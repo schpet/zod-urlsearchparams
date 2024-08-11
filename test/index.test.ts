@@ -232,7 +232,7 @@ test("serialize and parse object with Zod literal", () => {
 		type: z.literal("user"),
 	})
 
-	const originalData = { status: "active", type: "user" }
+	const originalData = { status: "active" as const, type: "user" as const }
 	const serialized = serialize({ schema, data: originalData })
 	const parsed = parse({ schema, input: serialized })
 
