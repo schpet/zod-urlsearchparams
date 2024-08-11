@@ -261,6 +261,14 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 			defaultData: this.defaultData,
 		})
 	}
+
+	lenientParse(input: URLSearchParams, defaultData: z.infer<T>) {
+		return lenientParse({
+			input,
+			schema: this.schema,
+			defaultData,
+		})
+	}
 }
 
 export {
