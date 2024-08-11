@@ -189,7 +189,7 @@ function lenientParse<T extends Schema>({
 	}
 
 	// Attempt to safeParse the validFields
-	const finalResult = schema.safeParse(validFields)
+	const finalResult = schema.parse(validFields)
 	if (finalResult.success) {
 		return finalResult.data
 	}
@@ -258,12 +258,11 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 }
 
 export {
-	parse,
-	safeParse,
-	lenientParse,
-	serialize,
+	lenientParse, parse,
+	safeParse, serialize,
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+
