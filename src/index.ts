@@ -2,9 +2,9 @@ import { z } from "zod"
 
 type Schema = z.ZodObject<Record<string, z.ZodTypeAny>>
 type ReadonlySchema<T extends Schema> = z.ZodObject<{
-  [K in keyof T['shape']]: T['shape'][K] extends z.ZodArray<infer E>
-    ? z.ZodReadonly<z.ZodArray<E>>
-    : T['shape'][K]
+	[K in keyof T["shape"]]: T["shape"][K] extends z.ZodArray<infer E>
+		? z.ZodReadonly<z.ZodArray<E>>
+		: T["shape"][K]
 }>
 
 function isScalar(value: unknown): boolean {
@@ -125,7 +125,11 @@ function shape<T extends Schema>({
 	return obj
 }
 
-function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): Readonly<z.infer<T>> {
+function parse<T extends Schema>({
+	schema,
+	input,
+	defaultData,
+}: ParseArgs<T>): Readonly<z.infer<T>> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.parse(shapedObject) as Readonly<z.infer<T>>
 }
@@ -136,7 +140,10 @@ function safeParse<T extends Schema>({
 	defaultData,
 }: ParseArgs<T>): z.SafeParseReturnType<Readonly<z.infer<T>>, Readonly<z.infer<T>>> {
 	const shapedObject = shape({ schema, input, defaultData })
-	return schema.safeParse(shapedObject) as z.SafeParseReturnType<Readonly<z.infer<T>>, Readonly<z.infer<T>>>
+	return schema.safeParse(shapedObject) as z.SafeParseReturnType<
+		Readonly<z.infer<T>>,
+		Readonly<z.infer<T>>
+	>
 }
 
 type SerializeArgs<T extends Schema> = {
@@ -206,6 +213,5 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs
+	type SerializeArgs,
 }
-
