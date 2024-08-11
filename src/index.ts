@@ -69,6 +69,9 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodBigInt) {
 		return stringToBigInt.parse(value)
 	}
+	if (schemaType instanceof z.ZodEnum || schemaType instanceof z.ZodNativeEnum) {
+		return value
+	}
 	return stringToOther.parse(value)
 }
 
