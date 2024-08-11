@@ -83,6 +83,7 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 }
 
 function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
+	console.log(schemaType)
 	if (schemaType instanceof z.ZodNumber) {
 		return numberToString.parse(value)
 	}
@@ -214,5 +215,6 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+
