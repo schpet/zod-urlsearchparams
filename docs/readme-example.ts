@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { ZodURLSearchParamSerializer } from "zod-urlsearchparams"
+import { ZodURLSearchParamSerializer } from "../dist"
 
 // Define your schema
 const schema = z.object({
