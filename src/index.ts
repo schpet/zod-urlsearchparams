@@ -1,11 +1,6 @@
 import { z } from "zod"
 
 type Schema = z.ZodObject<Record<string, z.ZodTypeAny>>
-type ReadonlySchema<T extends Schema> = z.ZodObject<{
-	[K in keyof T["shape"]]: T["shape"][K] extends z.ZodArray<infer E>
-		? z.ZodReadonly<z.ZodArray<E>>
-		: T["shape"][K]
-}>
 
 function isScalar(value: unknown): boolean {
 	return (
@@ -100,7 +95,7 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 }
 
 type ParseArgs<T extends Schema> = {
-	schema: ReadonlySchema<T>
+	schema: T
 	input: URLSearchParams
 	/**
 	 * Default data to use if the key is not present in the input, shallow merge
@@ -132,7 +127,7 @@ function parse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): z.infer<ReadonlySchema<T>> {
+}: ParseArgs<T>): z.infer<T> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.parse(shapedObject)
 }
@@ -141,13 +136,13 @@ function safeParse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): z.SafeParseReturnType<z.infer<ReadonlySchema<T>>, z.infer<ReadonlySchema<T>>> {
+}: ParseArgs<T>): z.SafeParseReturnType<z.infer<T>, z.infer<T>> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.safeParse(shapedObject)
 }
 
 type SerializeArgs<T extends Schema> = {
-	schema: ReadonlySchema<T>
+	schema: T
 	data: Readonly<z.infer<T>>
 	/**
 	 * Default data to use if the key is not present in the input, shallow merge
@@ -184,7 +179,7 @@ function serialize<T extends Schema>({
 
 class ZodURLSearchParamSerializer<T extends Schema> {
 	constructor(
-		private schema: ReadonlySchema<T>,
+		private schema: T,
 		private defaultData?: Readonly<Partial<z.infer<T>>>,
 	) {}
 
@@ -196,7 +191,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		})
 	}
 
-	deserialize(input: URLSearchParams): Readonly<z.infer<T>> {
+	deserialize(input: URLSearchParams): z.infer<T> {
 		return parse({
 			input,
 			schema: this.schema,
