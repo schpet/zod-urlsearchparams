@@ -173,15 +173,18 @@ function lenientParse<T extends Schema>({
 	const validFields: Partial<z.infer<T>> = {}
 	const shapedObject = shape({ schema, input, defaultData })
 
-	for (const key in shapedObject) {
+	for (const key in schema.shape) {
 		try {
-			const fieldSchema = (schema.shape as any)[key]
+			const fieldSchema = schema.shape[key]
 			if (fieldSchema) {
 				const parsedValue = fieldSchema.parse(shapedObject[key])
 				validFields[key as keyof z.infer<T>] = parsedValue
 			}
 		} catch (error) {
-			// Skip invalid fields
+			// If parsing fails, use the defaultData value if available
+			if (defaultData && key in defaultData) {
+				validFields[key as keyof z.infer<T>] = defaultData[key as keyof z.infer<T>]
+			}
 		}
 	}
 
