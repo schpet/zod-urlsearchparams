@@ -49,7 +49,7 @@ const lenientResult = serializer.lenientParse(invalidParams, defaultData)
 // it'll drop the invalid field and use the default value
 assert.deepStrictEqual(lenientResult, {
 	name: "Jane Doe",
-	age: 25, // Uses default value because 'nope' can't be parsed as a number
+	age: 25, // uses default value because 'nope' can't be parsed as a number
 	hobbies: ["reading", "gardening"],
 })
 ```
