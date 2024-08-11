@@ -4,7 +4,7 @@ solving the age old problem of reading and writing urls.
 
 - minimal urls, scalars are readable and editable by humans
 - vectors are encoded with base64
-- zero dependencies
+- zero dependencies outside of zod
 
 ## examples
 
