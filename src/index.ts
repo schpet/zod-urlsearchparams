@@ -129,21 +129,18 @@ function parse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): Readonly<z.infer<T>> {
+}: ParseArgs<T>): z.infer<ReadonlySchema<T>> {
 	const shapedObject = shape({ schema, input, defaultData })
-	return schema.parse(shapedObject) as Readonly<z.infer<T>>
+	return schema.parse(shapedObject)
 }
 
 function safeParse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): z.SafeParseReturnType<Readonly<z.infer<T>>, Readonly<z.infer<T>>> {
+}: ParseArgs<T>): z.SafeParseReturnType<z.infer<ReadonlySchema<T>>, z.infer<ReadonlySchema<T>>> {
 	const shapedObject = shape({ schema, input, defaultData })
-	return schema.safeParse(shapedObject) as z.SafeParseReturnType<
-		Readonly<z.infer<T>>,
-		Readonly<z.infer<T>>
-	>
+	return schema.safeParse(shapedObject)
 }
 
 type SerializeArgs<T extends Schema> = {
