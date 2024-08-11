@@ -131,7 +131,7 @@ test("ZodURLSearchParamSerializer serializes and deserializes simple object", ()
 	}
 
 	const serialized = serializer.serialize(originalData)
-	const deserialized = serializer.deserialize(serialized)
+	const deserialized = serializer.parse(serialized)
 
 	assert.deepEqual(deserialized, originalData)
 })
