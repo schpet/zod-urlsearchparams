@@ -123,11 +123,7 @@ function shape<T extends Schema>({
 	return obj
 }
 
-function parse<T extends Schema>({
-	schema,
-	input,
-	defaultData,
-}: ParseArgs<T>): z.infer<T> {
+function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): z.infer<T> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.parse(shapedObject)
 }
@@ -207,6 +203,5 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs
+	type SerializeArgs,
 }
-
