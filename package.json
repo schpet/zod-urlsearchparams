@@ -38,6 +38,7 @@
 	},
 	"scripts": {
 		"build": "tsup",
+    "build-watch": "tsup --watch",
 		"check": "biome check --write --unsafe",
 		"ci": "biome ci",
 		"format": "biome format --write",

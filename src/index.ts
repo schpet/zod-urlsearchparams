@@ -1,11 +1,6 @@
 import { z } from "zod"
 
 type Schema = z.ZodObject<Record<string, z.ZodTypeAny>>
-type ReadonlySchema<T extends Schema> = z.ZodObject<{
-	[K in keyof T["shape"]]: T["shape"][K] extends z.ZodArray<infer E>
-		? z.ZodReadonly<z.ZodArray<E>>
-		: T["shape"][K]
-}>
 
 function isScalar(value: unknown): boolean {
 	return (
@@ -74,18 +69,44 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodBigInt) {
 		return stringToBigInt.parse(value)
 	}
+	if (
+		schemaType instanceof z.ZodEnum ||
+		schemaType instanceof z.ZodNativeEnum ||
+		schemaType instanceof z.ZodLiteral ||
+		(schemaType instanceof z.ZodUnion &&
+			schemaType._def.options.every(
+				(option: z.ZodTypeAny) =>
+					option instanceof z.ZodLiteral ||
+					option instanceof z.ZodEnum ||
+					option instanceof z.ZodNativeEnum,
+			))
+	) {
+		return value
+	}
 	return stringToOther.parse(value)
 }
 
 function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
+	if (
+		schemaType instanceof z.ZodString ||
+		schemaType instanceof z.ZodEnum ||
+		schemaType instanceof z.ZodNativeEnum ||
+		schemaType instanceof z.ZodLiteral ||
+		(schemaType instanceof z.ZodUnion &&
+			schemaType._def.options.every(
+				(option: z.ZodTypeAny) =>
+					option instanceof z.ZodLiteral ||
+					option instanceof z.ZodEnum ||
+					option instanceof z.ZodNativeEnum,
+			))
+	) {
+		return value as string
+	}
 	if (schemaType instanceof z.ZodNumber) {
 		return numberToString.parse(value)
 	}
 	if (schemaType instanceof z.ZodBoolean) {
 		return booleanToString.parse(value)
-	}
-	if (schemaType instanceof z.ZodString) {
-		return value as string
 	}
 	if (schemaType instanceof z.ZodDate) {
 		return dateToString.parse(value)
@@ -93,14 +114,11 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 	if (schemaType instanceof z.ZodBigInt) {
 		return bigIntToString.parse(value)
 	}
-	if (schemaType instanceof z.ZodEnum) {
-		return value as string
-	}
 	return otherToString.parse(value)
 }
 
 type ParseArgs<T extends Schema> = {
-	schema: ReadonlySchema<T>
+	schema: T
 	input: URLSearchParams
 	/**
 	 * Default data to use if the key is not present in the input, shallow merge
@@ -128,11 +146,7 @@ function shape<T extends Schema>({
 	return obj
 }
 
-function parse<T extends Schema>({
-	schema,
-	input,
-	defaultData,
-}: ParseArgs<T>): z.infer<ReadonlySchema<T>> {
+function parse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): z.infer<T> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.parse(shapedObject)
 }
@@ -141,13 +155,49 @@ function safeParse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: ParseArgs<T>): z.SafeParseReturnType<z.infer<ReadonlySchema<T>>, z.infer<ReadonlySchema<T>>> {
+}: ParseArgs<T>): z.SafeParseReturnType<z.infer<T>, z.infer<T>> {
 	const shapedObject = shape({ schema, input, defaultData })
 	return schema.safeParse(shapedObject)
 }
 
+function lenientParse<T extends Schema>({
+	schema,
+	input,
+	defaultData,
+}: Omit<ParseArgs<T>, "defaultData"> & { defaultData: z.infer<T> }): z.infer<T> {
+	const result = safeParse({ schema, input, defaultData })
+	if (result.success) {
+		return result.data
+	}
+
+	const validFields: z.infer<T> = { ...defaultData }
+	const shapedObject = shape({ schema, input, defaultData })
+
+	for (const key in schema.shape) {
+		try {
+			const fieldSchema = schema.shape[key]
+			if (fieldSchema) {
+				const parsedValue = fieldSchema.parse(shapedObject[key])
+				validFields[key as keyof z.infer<T>] = parsedValue
+			}
+		} catch (error) {
+			// If parsing fails, use the defaultData value
+			validFields[key as keyof z.infer<T>] = defaultData[key as keyof z.infer<T>]
+		}
+	}
+
+	// Attempt to safeParse the validFields
+	const finalResult = schema.safeParse(validFields)
+	if (finalResult.success) {
+		return finalResult.data
+	}
+
+	// If safeParse fails, return defaultData
+	return defaultData
+}
+
 type SerializeArgs<T extends Schema> = {
-	schema: ReadonlySchema<T>
+	schema: T
 	data: Readonly<z.infer<T>>
 	/**
 	 * Default data to use if the key is not present in the input, shallow merge
@@ -184,11 +234,11 @@ function serialize<T extends Schema>({
 
 class ZodURLSearchParamSerializer<T extends Schema> {
 	constructor(
-		private schema: ReadonlySchema<T>,
+		private schema: T,
 		private defaultData?: Readonly<Partial<z.infer<T>>>,
 	) {}
 
-	serialize(data: Readonly<z.infer<T>>): URLSearchParams {
+	serialize(data: Readonly<z.infer<T>>) {
 		return serialize({
 			data,
 			schema: this.schema,
@@ -196,16 +246,33 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		})
 	}
 
-	deserialize(input: URLSearchParams): Readonly<z.infer<T>> {
+	parse(input: URLSearchParams) {
 		return parse({
 			input,
 			schema: this.schema,
 			defaultData: this.defaultData,
 		})
 	}
+
+	safeParse(input: URLSearchParams) {
+		return safeParse({
+			input,
+			schema: this.schema,
+			defaultData: this.defaultData,
+		})
+	}
+
+	lenientParse(input: URLSearchParams, defaultData: z.infer<T>) {
+		return lenientParse({
+			input,
+			schema: this.schema,
+			defaultData,
+		})
+	}
 }
 
 export {
+	lenientParse,
 	parse,
 	safeParse,
 	serialize,

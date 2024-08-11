@@ -1,6 +1,6 @@
 import { assert, test } from "vitest"
 import { z } from "zod"
-import { ZodURLSearchParamSerializer, parse, safeParse, serialize } from "../src"
+import { ZodURLSearchParamSerializer, lenientParse, parse, safeParse, serialize } from "../src"
 
 test("serialize basic object", () => {
 	const schema = z.object({
@@ -30,12 +30,49 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
+test("ZodURLSearchParamSerializer lenientParse with invalid enum value", () => {
+	const schema = z.object({
+		status: z.enum(["active", "inactive"]),
+		role: z.enum(["admin", "user", "guest"]),
+		age: z.number(),
+		name: z.string(),
+	})
+
+	const serializer = new ZodURLSearchParamSerializer(schema)
+
+	const input = new URLSearchParams({
+		status: "invalid_status",
+		role: "admin",
+		age: "not a number",
+		name: "John Doe",
+	})
+
+	const defaultData = {
+		status: "inactive" as const,
+		role: "guest" as const,
+		age: 0,
+		name: "Default Name",
+	}
+
+	const result = serializer.lenientParse(input, defaultData)
+
+	assert.deepEqual(result, {
+		status: "inactive",
+		role: "admin",
+		age: 0,
+		name: "John Doe",
+	})
+	assert.equal(result.status, defaultData.status, "The 'status' field should use the default value")
+	assert.equal(result.age, defaultData.age, "The 'age' field should use the default value")
+	assert.notEqual(result.name, defaultData.name, "The 'name' field should use the input value")
+})
+
 test("serialize object with array of enums", () => {
 	const schema = z.object({
 		statuses: z.array(z.enum(["PUBLISHED", "UNPUBLISHED"])),
 	})
 
-	const values = { statuses: ["PUBLISHED", "UNPUBLISHED"] } as const
+	const values = schema.parse({ statuses: ["PUBLISHED", "UNPUBLISHED"] })
 	const expected = new URLSearchParams()
 	expected.append("statuses", "PUBLISHED")
 	expected.append("statuses", "UNPUBLISHED")
@@ -131,9 +168,36 @@ test("ZodURLSearchParamSerializer serializes and deserializes simple object", ()
 	}
 
 	const serialized = serializer.serialize(originalData)
-	const deserialized = serializer.deserialize(serialized)
+	const deserialized = serializer.parse(serialized)
 
 	assert.deepEqual(deserialized, originalData)
+})
+
+test("ZodURLSearchParamSerializer safeParse with valid and invalid input", () => {
+	const schema = z.object({
+		age: z.number(),
+		name: z.string(),
+	})
+
+	const serializer = new ZodURLSearchParamSerializer(schema)
+
+	const validInput = new URLSearchParams({ age: "30", name: "John" })
+	const invalidInput = new URLSearchParams({ age: "not a number", name: "John" })
+
+	const validResult = serializer.safeParse(validInput)
+	const invalidResult = serializer.safeParse(invalidInput)
+
+	assert.isTrue(validResult.success)
+	if (validResult.success) {
+		assert.deepEqual(validResult.data, { age: 30, name: "John" })
+	}
+
+	assert.isFalse(invalidResult.success)
+	if (!invalidResult.success) {
+		assert.isTrue(Array.isArray(invalidResult.error.errors))
+		assert.isTrue(invalidResult.error.errors.length > 0)
+		assert.equal(invalidResult.error.errors[0].code, "invalid_type")
+	}
 })
 
 test("serialize and parse object with BigInt", () => {
@@ -204,6 +268,94 @@ test("safeParse with valid and invalid input", () => {
 		assert.isTrue(invalidResult.error.errors.length > 0)
 		assert.equal(invalidResult.error.errors[0].code, "invalid_type")
 	}
+})
+
+test("serialize and parse object with native enum", () => {
+	enum Color {
+		Red = "RED",
+		Green = "GREEN",
+		Blue = "BLUE",
+	}
+
+	const schema = z.object({
+		color: z.nativeEnum(Color),
+	})
+
+	const originalData = { color: Color.Green }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(parsed.color, Color.Green)
+	assert.strictEqual(serialized.get("color"), "GREEN")
+})
+
+test("serialize and parse object with Zod literal", () => {
+	const schema = z.object({
+		status: z.literal("active"),
+		type: z.literal("user"),
+	})
+
+	const originalData = { status: "active" as const, type: "user" as const }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(serialized.get("status"), "active")
+	assert.strictEqual(serialized.get("type"), "user")
+})
+
+test("serialize and parse object with Zod union of literals", () => {
+	const schema = z.object({
+		status: z.union([z.literal("active"), z.literal("inactive")]),
+		role: z.union([z.literal("admin"), z.literal("user"), z.literal("guest")]),
+	})
+
+	const originalData = { status: "inactive" as const, role: "admin" as const }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(serialized.get("status"), "inactive")
+	assert.strictEqual(serialized.get("role"), "admin")
+
+	// Test with different values
+	const anotherData = { status: "active" as const, role: "guest" as const }
+	const anotherSerialized = serialize({ schema, data: anotherData })
+	const anotherParsed = parse({ schema, input: anotherSerialized })
+
+	assert.deepEqual(anotherParsed, anotherData)
+	assert.strictEqual(anotherSerialized.get("status"), "active")
+	assert.strictEqual(anotherSerialized.get("role"), "guest")
+})
+
+test("lenientParse with invalid enum value", () => {
+	const schema = z.object({
+		a: z.enum(["A1", "A2", "A3"]),
+		b: z.enum(["B1", "B2", "B3"]),
+		c: z.number(),
+		d: z.string(),
+	})
+
+	const input = new URLSearchParams({
+		a: "A1",
+		b: "InvalidB",
+		c: "not a number",
+		d: "valid string",
+	})
+
+	const defaultData = {
+		a: "A2" as const,
+		b: "B1" as const,
+		c: 0,
+		d: "default string",
+	}
+
+	const result = lenientParse({ schema, input, defaultData })
+
+	assert.deepEqual(result, { a: "A1", b: "B1", c: 0, d: "valid string" })
+	assert.equal(result.b, defaultData.b, "The 'b' field should use the default value")
+	assert.equal(result.c, defaultData.c, "The 'c' field should use the default value")
 })
 
 test("serialize object with numbers and booleans", () => {
