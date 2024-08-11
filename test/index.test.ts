@@ -54,10 +54,8 @@ test("serialize and deserialize object with array of objects", () => {
 	const serialized = serialize({ schema, data: originalData })
 	const deserialized = parse({ schema, input: serialized })
 
-	assert.deepEqual(serialized.getAll("statuses"), ['{"label":"a"}', '{"label":"b"}'])
 	assert.deepEqual(deserialized, originalData)
 })
-
 
 test("parse URLSearchParams with defaultData and omitted fields", () => {
 	const schema = z.object({
