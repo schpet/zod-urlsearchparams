@@ -280,11 +280,18 @@ test("lenientParse with invalid enum value", () => {
 		d: "valid string",
 	})
 
-	const result = lenientParse({ schema, input })
+	const defaultData = {
+		a: "A2",
+		b: "B1",
+		c: 0,
+		d: "default string",
+	}
 
-	assert.deepEqual(result, { a: "A1", d: "valid string" })
-	assert.notProperty(result, "b", "The 'b' field should be dropped due to invalid enum value")
-	assert.notProperty(result, "c", "The 'c' field should be dropped due to invalid number")
+	const result = lenientParse({ schema, input, defaultData })
+
+	assert.deepEqual(result, { a: "A1", b: "B1", c: 0, d: "valid string" })
+	assert.equal(result.b, defaultData.b, "The 'b' field should use the default value")
+	assert.equal(result.c, defaultData.c, "The 'c' field should use the default value")
 })
 
 test("serialize object with numbers and booleans", () => {
