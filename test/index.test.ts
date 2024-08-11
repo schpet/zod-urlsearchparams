@@ -30,7 +30,7 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
-test("serialize object with array of statuses", () => {
+test("serialize object with array of strings", () => {
 	const schema = z.object({
 		statuses: z.array(z.enum(["PUBLISHED", "UNPUBLISHED"])),
 	})
