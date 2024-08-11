@@ -21,5 +21,6 @@ const data = {
 // Serialize the data
 const params = serializer.serialize(data)
 
-console.log(params.toString())
-// Output: name=John%20Doe&age=30&hobbies=reading&hobbies=cycling
+import { assert } from "vitest"
+
+assert.equal(params.toString(), "name=John%20Doe&age=30&hobbies=reading&hobbies=cycling")
