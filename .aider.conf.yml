@@ -5,5 +5,5 @@ lint-cmd: pnpm run check
 auto-lint: true
 
 # runs vitest
-test-cmd: pnpm run test
+test-cmd: pnpm run test && pnpm run types
 auto-test: true

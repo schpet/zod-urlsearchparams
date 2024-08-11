@@ -30,6 +30,33 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
+test("serialize object with array of enums", () => {
+	const schema = z.object({
+		statuses: z.array(z.enum(["PUBLISHED", "UNPUBLISHED"])),
+	})
+
+	const values = { statuses: ["PUBLISHED", "UNPUBLISHED"] } as const
+	const expected = new URLSearchParams()
+	expected.append("statuses", "PUBLISHED")
+	expected.append("statuses", "UNPUBLISHED")
+
+	const result = serialize({ schema, data: values })
+
+	assert.equal(result.toString(), "statuses=PUBLISHED&statuses=UNPUBLISHED")
+})
+
+test("serialize and deserialize object with array of objects", () => {
+	const schema = z.object({
+		statuses: z.array(z.object({ label: z.string() })),
+	})
+
+	const originalData = { statuses: [{ label: "a" }, { label: "b" }] }
+	const serialized = serialize({ schema, data: originalData })
+	const deserialized = parse({ schema, input: serialized })
+
+	assert.deepEqual(deserialized, originalData)
+})
+
 test("parse URLSearchParams with defaultData and omitted fields", () => {
 	const schema = z.object({
 		name: z.string(),
@@ -207,6 +234,7 @@ test("serialize object with array of strings", () => {
 	const result = serialize({ schema, data: values })
 
 	assert.equal(result.toString(), expected.toString())
+	assert.equal(result.toString(), "tags=tag1&tags=tag2&tags=tag3")
 })
 
 test("parse URLSearchParams to object", () => {
