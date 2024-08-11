@@ -30,6 +30,21 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
+test("serialize object with array of statuses", () => {
+	const schema = z.object({
+		statuses: z.array(z.enum(['PUBLISHED', 'UNPUBLISHED'])),
+	})
+
+	const values = { statuses: ['PUBLISHED', 'UNPUBLISHED'] }
+	const expected = new URLSearchParams()
+	expected.append('statuses', 'PUBLISHED')
+	expected.append('statuses', 'UNPUBLISHED')
+
+	const result = serialize({ schema, data: values })
+
+	assert.equal(result.toString(), 'statuses=PUBLISHED&statuses=UNPUBLISHED')
+})
+
 test("parse URLSearchParams with defaultData and omitted fields", () => {
 	const schema = z.object({
 		name: z.string(),
