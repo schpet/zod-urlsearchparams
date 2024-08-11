@@ -226,6 +226,21 @@ test("serialize and parse object with native enum", () => {
 	assert.strictEqual(serialized.get("color"), "GREEN")
 })
 
+test("serialize and parse object with Zod literal", () => {
+	const schema = z.object({
+		status: z.literal("active"),
+		type: z.literal("user"),
+	})
+
+	const originalData = { status: "active", type: "user" }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(serialized.get("status"), "active")
+	assert.strictEqual(serialized.get("type"), "user")
+})
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
