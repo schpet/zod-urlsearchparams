@@ -172,7 +172,7 @@ function serialize<T extends Schema>({
 			if (defaultData == null || !isEqual(value, defaultData[key])) {
 				if (schemaType instanceof z.ZodArray) {
 					for (let item of value as unknown[]) {
-						params.append(key, item as string)
+						params.append(key, serializeValue(item, schemaType.element))
 					}
 				} else {
 					params.append(key, serializeValue(value, schemaType))
