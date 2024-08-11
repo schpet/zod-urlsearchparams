@@ -30,6 +30,43 @@ test("parse URLSearchParams to object with numbers and booleans", () => {
 	assert.deepEqual(result, expected)
 })
 
+test("ZodURLSearchParamSerializer lenientParse with invalid enum value", () => {
+	const schema = z.object({
+		status: z.enum(["active", "inactive"]),
+		role: z.enum(["admin", "user", "guest"]),
+		age: z.number(),
+		name: z.string(),
+	})
+
+	const serializer = new ZodURLSearchParamSerializer(schema)
+
+	const input = new URLSearchParams({
+		status: "invalid_status",
+		role: "admin",
+		age: "not a number",
+		name: "John Doe",
+	})
+
+	const defaultData = {
+		status: "inactive" as const,
+		role: "guest" as const,
+		age: 0,
+		name: "Default Name",
+	}
+
+	const result = serializer.lenientParse(input, defaultData)
+
+	assert.deepEqual(result, {
+		status: "inactive",
+		role: "admin",
+		age: 0,
+		name: "John Doe",
+	})
+	assert.equal(result.status, defaultData.status, "The 'status' field should use the default value")
+	assert.equal(result.age, defaultData.age, "The 'age' field should use the default value")
+	assert.notEqual(result.name, defaultData.name, "The 'name' field should use the input value")
+})
+
 test("serialize object with array of enums", () => {
 	const schema = z.object({
 		statuses: z.array(z.enum(["PUBLISHED", "UNPUBLISHED"])),
