@@ -238,7 +238,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		private defaultData?: Readonly<Partial<z.infer<T>>>,
 	) {}
 
-	serialize(data: Readonly<z.infer<T>>): URLSearchParams {
+	serialize(data: Readonly<z.infer<T>>) {
 		return serialize({
 			data,
 			schema: this.schema,
@@ -246,7 +246,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		})
 	}
 
-	parse(input: URLSearchParams): z.infer<T> {
+	parse(input: URLSearchParams) {
 		return parse({
 			input,
 			schema: this.schema,
@@ -254,7 +254,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 		})
 	}
 
-	safeParse(input: URLSearchParams): z.SafeParseReturnType<z.infer<T>, z.infer<T>> {
+	safeParse(input: URLSearchParams) {
 		return safeParse({
 			input,
 			schema: this.schema,
@@ -271,5 +271,6 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+
