@@ -69,7 +69,11 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodBigInt) {
 		return stringToBigInt.parse(value)
 	}
-	if (schemaType instanceof z.ZodEnum || schemaType instanceof z.ZodNativeEnum) {
+	if (
+		schemaType instanceof z.ZodEnum ||
+		schemaType instanceof z.ZodNativeEnum ||
+		schemaType instanceof z.ZodLiteral
+	) {
 		return value
 	}
 	return stringToOther.parse(value)
@@ -79,7 +83,8 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 	if (
 		schemaType instanceof z.ZodString ||
 		schemaType instanceof z.ZodEnum ||
-		schemaType instanceof z.ZodNativeEnum
+		schemaType instanceof z.ZodNativeEnum ||
+		schemaType instanceof z.ZodLiteral
 	) {
 		return value as string
 	}
