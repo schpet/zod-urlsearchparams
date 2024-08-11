@@ -1,6 +1,6 @@
 # zod urlsearchparams
 
-solving the age old problem of reading and writing urls.
+solving the age old problem of reading and writing url search parameters.
 
 - minimal urls, scalars are readable and editable by humans
 - vectors are encoded with base64
