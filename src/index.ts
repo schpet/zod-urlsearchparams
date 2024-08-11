@@ -95,7 +95,6 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 	if (schemaType instanceof z.ZodBigInt) {
 		return bigIntToString.parse(value)
 	}
-	console.log("did not match any type", { value, schemaType })
 	return otherToString.parse(value)
 }
 
@@ -208,5 +207,6 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+
