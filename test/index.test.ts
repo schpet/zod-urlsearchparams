@@ -241,6 +241,30 @@ test("serialize and parse object with Zod literal", () => {
 	assert.strictEqual(serialized.get("type"), "user")
 })
 
+test("serialize and parse object with Zod union of literals", () => {
+	const schema = z.object({
+		status: z.union([z.literal("active"), z.literal("inactive")]),
+		role: z.union([z.literal("admin"), z.literal("user"), z.literal("guest")]),
+	})
+
+	const originalData = { status: "inactive" as const, role: "admin" as const }
+	const serialized = serialize({ schema, data: originalData })
+	const parsed = parse({ schema, input: serialized })
+
+	assert.deepEqual(parsed, originalData)
+	assert.strictEqual(serialized.get("status"), "inactive")
+	assert.strictEqual(serialized.get("role"), "admin")
+
+	// Test with different values
+	const anotherData = { status: "active" as const, role: "guest" as const }
+	const anotherSerialized = serialize({ schema, data: anotherData })
+	const anotherParsed = parse({ schema, input: anotherSerialized })
+
+	assert.deepEqual(anotherParsed, anotherData)
+	assert.strictEqual(anotherSerialized.get("status"), "active")
+	assert.strictEqual(anotherSerialized.get("role"), "guest")
+})
+
 test("serialize object with numbers and booleans", () => {
 	const schema = z.object({
 		count: z.number(),
