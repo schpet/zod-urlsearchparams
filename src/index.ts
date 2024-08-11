@@ -160,6 +160,10 @@ function safeParse<T extends Schema>({
 	return schema.safeParse(shapedObject)
 }
 
+function lenientParse<T extends Schema>({ schema, input, defaultData }: ParseArgs<T>): z.infer<T> {
+	throw new Error("unimplemented")
+}
+
 type SerializeArgs<T extends Schema> = {
 	schema: T
 	data: Readonly<z.infer<T>>
@@ -222,6 +226,7 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 export {
 	parse,
 	safeParse,
+	lenientParse,
 	serialize,
 	shape,
 	ZodURLSearchParamSerializer,
