@@ -23,7 +23,7 @@ note: the following examples use the ZodURLSearchParamSerializer class api, but 
 ```ts
 import assert from "node:assert"
 import { z } from "zod"
-import { ZodURLSearchParamSerializer } from "../dist"
+import { ZodURLSearchParamSerializer } from "zod-urlsearchparams"
 
 // setup your schema
 const schema = z.object({ name: z.string(), age: z.number(), hobbies: z.array(z.string()) })
