@@ -164,7 +164,7 @@ function lenientParse<T extends Schema>({
 	schema,
 	input,
 	defaultData,
-}: Omit<ParseArgs<T>, 'defaultData'> & { defaultData: z.infer<T> }): z.infer<T> {
+}: Omit<ParseArgs<T>, "defaultData"> & { defaultData: z.infer<T> }): z.infer<T> {
 	const result = safeParse({ schema, input, defaultData })
 	if (result.success) {
 		return result.data
@@ -256,11 +256,12 @@ class ZodURLSearchParamSerializer<T extends Schema> {
 }
 
 export {
-	lenientParse, parse,
-	safeParse, serialize,
+	lenientParse,
+	parse,
+	safeParse,
+	serialize,
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs
+	type SerializeArgs,
 }
-
