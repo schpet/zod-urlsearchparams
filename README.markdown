@@ -1,11 +1,13 @@
 # zod urlsearchparams
 
-convert a zod object to a URLSearchParam and vice versa.
+convert an object to a URLSearchParam based on its zod schema and vice versa.
 
 - minimal urls, scalars are readable and editable by humans
 - vectors are encoded with base64
 - allows gracefully falling back to defaults with `lenientParse` 
 - zero dependencies outside of zod
+
+[introductory blog post](https://schpet.com/note/building-a-typescript-library-with-aider) explaining how this library was built with [aider](https://aider.chat/).
 
 ## install
 
@@ -16,51 +18,104 @@ yarn add zod-urlsearchparams
 ni zod-urlsearchparams
 ```
 
-## examples
+## usage
 
-note: the following examples use the ZodURLSearchParamSerializer class api, but `serialize`, `parse`, `shape`, `lenientParse` etc are exported on their own too.
-
-### serializing
+### basic
 
 ```ts
-import assert from "node:assert"
-import { z } from "zod"
-import { ZodURLSearchParamSerializer } from "zod-urlsearchparams"
+import { z } from "zod";
+import { lenientParse, parse, serialize } from "zod-urlsearchparams";
 
-// setup your schema
-const schema = z.object({ name: z.string(), age: z.number(), hobbies: z.array(z.string()) })
+let schema = z.object({
+  age: z.bigint(),
+  species: z.enum(["dog", "cat"]),
+  interests: z.array(z.string()),
+  location: z.object({
+    room: z.string(),
+  }),
+});
 
-// setup the serializer
-const serializer = new ZodURLSearchParamSerializer(schema)
+let serialized = serialize({
+  schema,
+  data: {
+    age: BigInt(5),
+    species: "dog",
+    interests: ["sleeping", "sniffing"],
+    location: {
+      room: "kitchen",
+    },
+  },
+});
+console.log(serialized.toString());
+// age=5&species=dog&interests=sleeping&interests=sniffing&location=eyJyb29tIjoia2l0Y2hlbiJ9
 
-// serialize some data to url params
-const data = { name: "John Doe", age: 30, hobbies: ["reading", "cycling"] }
-const params = serializer.serialize(data)
+let strictParsed = parse({
+  schema,
+  input: new URLSearchParams(
+    "age=10&species=cat&interests=sleeping&interests=sniffing&location=eyJyb29tIjoiY2F0aW8ifQ"
+  ),
+});
+console.log(strictParsed);
+// {
+//   age: 10n,
+//   species: 'cat',
+//   interests: [ 'sleeping', 'sniffing' ],
+//   location: { room: 'catio' }
+// }
 
-// see how it looks–
-assert.strictEqual(params.toString(), "name=John+Doe&age=30&hobbies=reading&hobbies=cycling")
+let lenientParsed = lenientParse({
+  schema,
+  input: new URLSearchParams("age=10&species=cat"),
+  defaultData: {
+    age: BigInt(0),
+    species: "dog",
+    interests: [],
+    location: { room: "kitchen" },
+  },
+});
+console.log(lenientParsed);
+// {
+//   age: 10n,
+//   species: 'cat',
+//   interests: [],
+//   location: { room: 'kitchen' }
+// }
 ```
 
-### parsing
+### class based api
 
 ```ts
-// sometimes people will visit a url that doesn't conform
-const invalidParams = new URLSearchParams("name=Jane+Doe&age=nope&hobbies=reading&hobbies=gardening")
+import { ZodURLSearchParamSerializer } from "zod-urlsearchparams";
 
-// so we provide defaults to fall back to
-const defaultData: z.infer<typeof schema> = {
-	name: "Default Name",
-	age: 25,
-	hobbies: ["default hobby"],
-}
+let serializer = new ZodURLSearchParamSerializer(schema);
 
-// parse it :4)
-const lenientResult = serializer.lenientParse(invalidParams, defaultData)
+let serializedBySerializer = serializer.serialize({
+  age: BigInt(5),
+  species: "dog",
+  interests: ["sleeping", "sniffing"],
+  location: {
+    room: "kitchen",
+  },
+});
+console.log(serializedBySerializer.toString());
+// age=5&species=dog&interests=sleeping&interests=sniffing&location=eyJyb29tIjoia2l0Y2hlbiJ9
 
-// it'll drop the invalid field and use the default value
-assert.deepStrictEqual(lenientResult, {
-	name: "Jane Doe",
-	age: 25, // uses default value because 'nope' can't be parsed as a number
-	hobbies: ["reading", "gardening"],
-})
+let parsedBySerializer = serializer.lenientParse(
+  new URLSearchParams(
+    "age=10&species=cat&interests=sleeping&interests=sniffing&location=eyJyb29tIjoiY2F0aW8ifQ"
+  ),
+  {
+    age: BigInt(0),
+    species: "dog",
+    interests: [],
+    location: { room: "kitchen" },
+  }
+);
+console.log(parsedBySerializer);
+// {
+//   age: 10n,
+//   species: 'cat',
+//   interests: [ 'sleeping', 'sniffing' ],
+//   location: { room: 'catio' }
+// }
 ```
