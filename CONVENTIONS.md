@@ -1,5 +1,5 @@
-- Avoid casting with as whenever possible
-- Avoid unsafe types like any
-- Prefer checking for presence with 'val == null' instead of '!val'
-- Use unique test identifiers
-- Don't add comments
+- avoid casting with as whenever possible
+- avoid unsafe types like any
+- prefer checking for presence with 'val == null' instead of '!val'
+- avoid adding comments explaining code
+- prefer for of loops over traditional for loops or forEach

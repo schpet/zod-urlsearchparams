@@ -1,4 +1,4 @@
-import { assert, test } from "vitest"
+import { assert, expect, test } from "vitest"
 import { z } from "zod"
 import { ZodURLSearchParamSerializer, lenientParse, parse, safeParse, serialize } from "../src"
 
@@ -243,6 +243,61 @@ test("serialize and parse nested object with emoji", () => {
 
 	assert.deepEqual(parsed, originalData)
 	assert.strictEqual(parsed.p.c, "Hello, 🌍!")
+})
+
+test("serialize a nested object", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+		}),
+	})
+
+	const data = {
+		user: {
+			name: "John Doe",
+		},
+	}
+
+	const serialized = serialize({ schema, data })
+	expect(serialized.toString()).toMatchInlineSnapshot(`"user=eyJuYW1lIjoiSm9obiBEb2UifQ"`)
+})
+
+test("parse a nested object", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+		}),
+	})
+	let result = parse({ schema, input: new URLSearchParams("user=eyJuYW1lIjoiSm9obiBEb2UifQ") })
+	expect(result.user.name).toBe("John Doe")
+})
+
+test("parse a nested object with invalid json", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+		}),
+	})
+
+	expect(() => parse({ schema, input: new URLSearchParams("user=nope") })).toThrow(z.ZodError)
+})
+
+test("lenientParse a nested object with invalid json", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+		}),
+	})
+
+	const defaultData = {
+		user: {
+			name: "Default Name",
+		},
+	}
+
+	const result = lenientParse({ schema, input: new URLSearchParams("user=nope"), defaultData })
+
+	expect(result).toEqual(defaultData)
 })
 
 test("safeParse with valid and invalid input", () => {
