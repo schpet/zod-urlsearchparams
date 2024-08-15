@@ -282,6 +282,23 @@ test("parse a nested object with invalid json", () => {
 	expect(() => parse({ schema, input: new URLSearchParams("user=nope") })).toThrow(z.ZodError)
 })
 
+test("lenientParse a nested object with invalid json", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+		}),
+	})
+
+	const defaultData = {
+		user: {
+			name: "Default Name",
+		},
+	}
+
+	const result = lenientParse({ schema, input: new URLSearchParams("user=nope"), defaultData })
+
+	expect(result).toEqual(defaultData)
+})
 
 test("safeParse with valid and invalid input", () => {
 	const schema = z.object({
