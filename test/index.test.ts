@@ -245,6 +245,53 @@ test("serialize and parse nested object with emoji", () => {
 	assert.strictEqual(parsed.p.c, "Hello, 🌍!")
 })
 
+test("serialize nested object", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+			age: z.number(),
+			address: z.object({
+				street: z.string(),
+				city: z.string(),
+				country: z.string(),
+			}),
+		}),
+		preferences: z.object({
+			theme: z.enum(["light", "dark"]),
+			notifications: z.boolean(),
+		}),
+	})
+
+	const data = {
+		user: {
+			name: "John Doe",
+			age: 30,
+			address: {
+				street: "123 Main St",
+				city: "Anytown",
+				country: "USA",
+			},
+		},
+		preferences: {
+			theme: "dark" as const,
+			notifications: true,
+		},
+	}
+
+	const serialized = serialize({ schema, data })
+
+	assert.equal(serialized.get("user.name"), "John Doe")
+	assert.equal(serialized.get("user.age"), "30")
+	assert.equal(serialized.get("user.address.street"), "123 Main St")
+	assert.equal(serialized.get("user.address.city"), "Anytown")
+	assert.equal(serialized.get("user.address.country"), "USA")
+	assert.equal(serialized.get("preferences.theme"), "dark")
+	assert.equal(serialized.get("preferences.notifications"), "t")
+
+	const parsed = parse({ schema, input: serialized })
+	assert.deepEqual(parsed, data)
+})
+
 test("safeParse with valid and invalid input", () => {
 	const schema = z.object({
 		age: z.number(),
