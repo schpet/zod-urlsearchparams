@@ -51,7 +51,13 @@ const stringToNumber = z.string().transform((val) => {
 })
 const stringToDate = z.string().transform((val) => new Date(val))
 const stringToBigInt = z.string().transform((val) => BigInt(val))
-const stringToOther = z.string().transform((val) => JSON.parse(base64ToUtf8(val)))
+const stringToOther = z.string().transform((val) => {
+	try {
+		return JSON.parse(base64ToUtf8(val))
+	} catch (error) {
+		return undefined
+	}
+})
 
 function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodNumber) {
@@ -279,5 +285,6 @@ export {
 	shape,
 	ZodURLSearchParamSerializer,
 	type ParseArgs,
-	type SerializeArgs,
+	type SerializeArgs
 }
+

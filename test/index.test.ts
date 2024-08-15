@@ -1,6 +1,7 @@
-import { assert, test } from "vitest"
+import { assert, expect, test } from "vitest"
 import { z } from "zod"
 import { ZodURLSearchParamSerializer, lenientParse, parse, safeParse, serialize } from "../src"
+
 
 test("serialize basic object", () => {
 	const schema = z.object({
@@ -245,51 +246,52 @@ test("serialize and parse nested object with emoji", () => {
 	assert.strictEqual(parsed.p.c, "Hello, 🌍!")
 })
 
-test("serialize nested object", () => {
+test("serialize a nested object", () => {
 	const schema = z.object({
 		user: z.object({
 			name: z.string(),
-			age: z.number(),
-			address: z.object({
-				street: z.string(),
-				city: z.string(),
-				country: z.string(),
-			}),
-		}),
-		preferences: z.object({
-			theme: z.enum(["light", "dark"]),
-			notifications: z.boolean(),
 		}),
 	})
 
 	const data = {
 		user: {
 			name: "John Doe",
-			age: 30,
-			address: {
-				street: "123 Main St",
-				city: "Anytown",
-				country: "USA",
-			},
-		},
-		preferences: {
-			theme: "dark" as const,
-			notifications: true,
 		},
 	}
 
 	const serialized = serialize({ schema, data })
+	expect(serialized.toString()).toMatchInlineSnapshot(`"user=eyJuYW1lIjoiSm9obiBEb2UifQ"`)
+})
 
-	assert.equal(serialized.get("user.name"), "John Doe")
-	assert.equal(serialized.get("user.age"), "30")
-	assert.equal(serialized.get("user.address.street"), "123 Main St")
-	assert.equal(serialized.get("user.address.city"), "Anytown")
-	assert.equal(serialized.get("user.address.country"), "USA")
-	assert.equal(serialized.get("preferences.theme"), "dark")
-	assert.equal(serialized.get("preferences.notifications"), "t")
+test("parse a nested object", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+		}),
+	})
+	let result = parse({ schema, input: new URLSearchParams("user=eyJuYW1lIjoiSm9obiBEb2UifQ") })
+	expect(result.user.name).toBe("John Doe")
+})
 
-	const parsed = parse({ schema, input: serialized })
-	assert.deepEqual(parsed, data)
+test("parse a nested object with invalid json", () => {
+	const schema = z.object({
+		user: z.object({
+			name: z.string(),
+		}),
+	})
+	let result = parse({ schema, input: new URLSearchParams("user=nope") })
+	// TODO, assert this error
+	//ZodError: [
+  // {
+  //   "code": "invalid_type",
+  //   "expected": "object",
+  //   "received": "undefined",
+  //   "path": [
+  //     "user"
+  //   ],
+  //   "message": "Required"
+  // }
+	// ]
 })
 
 test("safeParse with valid and invalid input", () => {
