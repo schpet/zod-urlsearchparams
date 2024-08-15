@@ -7,3 +7,5 @@ auto-lint: true
 # runs vitest
 test-cmd: pnpm run test && pnpm run types
 auto-test: true
+
+read: CONVENTIONS.md
