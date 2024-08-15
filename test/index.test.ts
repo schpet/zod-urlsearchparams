@@ -279,19 +279,24 @@ test("parse a nested object with invalid json", () => {
 			name: z.string(),
 		}),
 	})
-	let result = parse({ schema, input: new URLSearchParams("user=nope") })
-	// TODO, assert this error
-	//ZodError: [
-  // {
-  //   "code": "invalid_type",
-  //   "expected": "object",
-  //   "received": "undefined",
-  //   "path": [
-  //     "user"
-  //   ],
-  //   "message": "Required"
-  // }
-	// ]
+	expect(() => parse({ schema, input: new URLSearchParams("user=nope") })).toThrow(z.ZodError)
+	try {
+		parse({ schema, input: new URLSearchParams("user=nope") })
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			expect(error.errors).toEqual([
+				{
+					code: "invalid_type",
+					expected: "object",
+					received: "undefined",
+					path: ["user"],
+					message: "Required",
+				},
+			])
+		} else {
+			throw error // Re-throw if it's not a ZodError
+		}
+	}
 })
 
 test("safeParse with valid and invalid input", () => {
