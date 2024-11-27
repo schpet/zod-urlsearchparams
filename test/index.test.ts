@@ -1,5 +1,5 @@
 import { assert, expect, test, describe } from "vitest"
-import {z, ZodError} from "zod"
+import { z, ZodError } from "zod"
 import { ZodURLSearchParamSerializer, lenientParse, parse, safeParse, serialize } from "../src"
 
 test("serialize basic object", () => {
@@ -502,16 +502,16 @@ test("parse URLSearchParams with array of strings and array of numbers", () => {
 describe("with effects", () => {
 	test.for([
 		{
-			name: 'default',
+			name: "default",
 			schema: z.object({
 				a: z.string().default("hi"),
 				b: z.number().default(1),
 			}),
 			input: new URLSearchParams(),
-			expected: {a: "hi", b: 1},
+			expected: { a: "hi", b: 1 },
 		},
 		{
-			name: 'optional',
+			name: "optional",
 			schema: z.object({
 				a: z.string().optional(),
 				b: z.number().optional(),
@@ -520,16 +520,16 @@ describe("with effects", () => {
 			expected: {},
 		},
 		{
-			name: 'min',
+			name: "min",
 			schema: z.object({
 				a: z.string().min(1),
 				b: z.number().min(1),
 			}),
 			input: new URLSearchParams("a=hi&b=1"),
-			expected: {a: "hi", b: 1},
+			expected: { a: "hi", b: 1 },
 		},
 		{
-			name: 'min condition not met',
+			name: "min condition not met",
 			schema: z.object({
 				a: z.string().min(1),
 				b: z.number().min(1),
@@ -538,36 +538,36 @@ describe("with effects", () => {
 			expected: ZodError,
 		},
 		{
-			name: 'preprocessor',
+			name: "preprocessor",
 			schema: z.object({
 				a: z.preprocess(Number, z.number()),
 			}),
 			input: new URLSearchParams("a=1"),
-			expected: {a: 1},
+			expected: { a: 1 },
 		},
 		{
-			name: 'post processor - transform number->number',
+			name: "post processor - transform number->number",
 			schema: z.object({
 				a: z.number().transform(Number),
 			}),
 			input: new URLSearchParams("a=1"),
-			expected: {a: 1},
+			expected: { a: 1 },
 		},
 		{
-			name: 'post processor - transform string->number',
+			name: "post processor - transform string->number",
 			schema: z.object({
 				a: z.string().transform(Number),
 			}),
 			input: new URLSearchParams("a=1"),
-			expected: {a: 1},
+			expected: { a: 1 },
 		},
-	])(`$name`, ({schema, input, expected}, {expect}) => {
+	])(`$name`, ({ schema, input, expected }, { expect }) => {
 		if (expected instanceof Error || Error.isPrototypeOf(expected)) {
-			expect(() => parse({schema, input})).toThrow(expected as never)
+			expect(() => parse({ schema, input })).toThrow(expected as never)
 		} else {
-			let parsed = parse({schema, input: new URLSearchParams(input)});
+			let parsed = parse({ schema, input: new URLSearchParams(input) })
 			expect(parsed).toEqual(expected)
-			let urlSearchParams = serialize({schema, data: parsed});
+			let urlSearchParams = serialize({ schema, data: parsed })
 			expect(urlSearchParams).toEqual(input)
 		}
 	})
