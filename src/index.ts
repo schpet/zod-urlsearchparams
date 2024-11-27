@@ -133,10 +133,10 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string | unde
 	if (schemaType instanceof z.ZodDefault) {
 		// Serialize the value according to the defaults value
 		// If the serialized default is the same then we skip it
-		let serialized = serializeValue(value, schemaType._def.innerType);
-		let defaultValue = serializeValue(schemaType._def.defaultValue(), schemaType._def.innerType);
-		if (serialized === defaultValue) return undefined;
-		return serialized;
+		let serialized = serializeValue(value, schemaType._def.innerType)
+		let defaultValue = serializeValue(schemaType._def.defaultValue(), schemaType._def.innerType)
+		if (serialized === defaultValue) return undefined
+		return serialized
 	}
 	return otherToString.parse(value)
 }
@@ -244,11 +244,11 @@ function serialize<T extends Schema>({
 			if (defaultData == null || !isEqual(value, defaultData[key])) {
 				if (schemaType instanceof z.ZodArray) {
 					for (let item of value as unknown[]) {
-						let serialized = serializeValue(item, schemaType.element);
+						let serialized = serializeValue(item, schemaType.element)
 						if (serialized !== undefined) params.append(key, serialized)
 					}
 				} else {
-					let serialized = serializeValue(value, schemaType);
+					let serialized = serializeValue(value, schemaType)
 					if (serialized !== undefined) params.append(key, serialized)
 				}
 			}
