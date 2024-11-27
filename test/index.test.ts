@@ -562,7 +562,7 @@ describe("with effects", () => {
 			expected: { a: 1 },
 		},
 	])(`$name`, ({ schema, input, expected }, { expect }) => {
-		if (expected instanceof Error || Error.isPrototypeOf(expected)) {
+		if (expected instanceof Error || expected === Error || expected === ZodError) {
 			expect(() => parse({ schema, input })).toThrow(expected as never)
 		} else {
 			let parsed = parse({ schema, input: new URLSearchParams(input) })
