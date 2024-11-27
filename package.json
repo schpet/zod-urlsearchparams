@@ -1,7 +1,7 @@
 {
 	"name": "zod-urlsearchparams",
 	"description": "serializes and deserializes a zod schema to URLSearchParams",
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"author": "Peter Schilling <npm@schpet.com>",
 	"bugs": {
 		"url": "https://github.com/schpet/zod-urlsearchparams/issues"
