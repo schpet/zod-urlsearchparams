@@ -75,6 +75,12 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodBigInt) {
 		return stringToBigInt.parse(value)
 	}
+	if (schemaType instanceof z.ZodEffects) {
+		return parseValue(value, schemaType._def.schema)
+	}
+	if (schemaType instanceof z.ZodDefault) {
+		return parseValue(value, schemaType._def.innerType)
+	}
 	if (
 		schemaType instanceof z.ZodEnum ||
 		schemaType instanceof z.ZodNativeEnum ||
@@ -92,7 +98,7 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	return stringToOther.parse(value)
 }
 
-function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
+function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string | undefined {
 	if (
 		schemaType instanceof z.ZodString ||
 		schemaType instanceof z.ZodEnum ||
@@ -119,6 +125,18 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string {
 	}
 	if (schemaType instanceof z.ZodBigInt) {
 		return bigIntToString.parse(value)
+	}
+	if (schemaType instanceof z.ZodEffects) {
+		// For effectors, we use the output type, effectively ignoring the effector logic
+		return serializeValue(value, schemaType._def.schema)
+	}
+	if (schemaType instanceof z.ZodDefault) {
+		// Serialize the value according to the defaults value
+		// If the serialized default is the same then we skip it
+		let serialized = serializeValue(value, schemaType._def.innerType);
+		let defaultValue = serializeValue(schemaType._def.defaultValue(), schemaType._def.innerType);
+		if (serialized === defaultValue) return undefined;
+		return serialized;
 	}
 	return otherToString.parse(value)
 }
@@ -226,10 +244,12 @@ function serialize<T extends Schema>({
 			if (defaultData == null || !isEqual(value, defaultData[key])) {
 				if (schemaType instanceof z.ZodArray) {
 					for (let item of value as unknown[]) {
-						params.append(key, serializeValue(item, schemaType.element))
+						let serialized = serializeValue(item, schemaType.element);
+						if (serialized !== undefined) params.append(key, serialized)
 					}
 				} else {
-					params.append(key, serializeValue(value, schemaType))
+					let serialized = serializeValue(value, schemaType);
+					if (serialized !== undefined) params.append(key, serialized)
 				}
 			}
 		}
