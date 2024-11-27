@@ -1,5 +1,5 @@
-import { assert, expect, test, describe } from "vitest"
-import { z, ZodError } from "zod"
+import { assert, describe, expect, test } from "vitest"
+import { ZodError, z } from "zod"
 import { ZodURLSearchParamSerializer, lenientParse, parse, safeParse, serialize } from "../src"
 
 test("serialize basic object", () => {
