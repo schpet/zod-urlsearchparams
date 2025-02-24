@@ -520,6 +520,15 @@ describe("with effects", () => {
 			expected: {},
 		},
 		{
+			name: "optional - with values",
+			schema: z.object({
+				a: z.string().optional(),
+				b: z.number().optional(),
+			}),
+			input: new URLSearchParams("a=hi&b=1"),
+			expected: { a: "hi", b: 1 },
+		},
+		{
 			name: "min",
 			schema: z.object({
 				a: z.string().min(1),
