@@ -81,6 +81,9 @@ function parseValue(value: string, schemaType: z.ZodTypeAny): unknown {
 	if (schemaType instanceof z.ZodDefault) {
 		return parseValue(value, schemaType._def.innerType)
 	}
+	if (schemaType instanceof z.ZodOptional) {
+		return parseValue(value, schemaType._def.innerType)
+	}
 	if (
 		schemaType instanceof z.ZodEnum ||
 		schemaType instanceof z.ZodNativeEnum ||
@@ -137,6 +140,10 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string | unde
 		let defaultValue = serializeValue(schemaType._def.defaultValue(), schemaType._def.innerType)
 		if (serialized === defaultValue) return undefined
 		return serialized
+	}
+
+	if(schemaType instanceof z.ZodOptional){
+		return serializeValue(value, schemaType._def.innerType)
 	}
 	return otherToString.parse(value)
 }
