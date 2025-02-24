@@ -142,7 +142,7 @@ function serializeValue(value: unknown, schemaType: z.ZodTypeAny): string | unde
 		return serialized
 	}
 
-	if(schemaType instanceof z.ZodOptional){
+	if (schemaType instanceof z.ZodOptional) {
 		return serializeValue(value, schemaType._def.innerType)
 	}
 	return otherToString.parse(value)
